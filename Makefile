@@ -13,4 +13,7 @@ sdl:
 
 clean:
 	rm *~
+	rm -fr html
 
+doc:
+	doxygen Doxyfile
