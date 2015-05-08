@@ -33,7 +33,7 @@ Uint32 gbit_InitModes[] = {
 
 //--------------------------------------------------------------------
 //
-// SDL_CreateWindow() modes.
+// SDL_CreateWindow() modes and positions.
 //
 //--------------------------------------------------------------------
 
@@ -64,3 +64,5 @@ Uint32 gbit_CwModes[] = {
   SDL_WINDOW_ALLOW_HIGHDPI
 };
 
+char*  gstr_CwPos[] = {"undefined", "centered", 0};
+Uint32 gbit_CwPos[] = {SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_CENTERED};
