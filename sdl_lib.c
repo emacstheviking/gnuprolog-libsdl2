@@ -8,12 +8,17 @@
 #include "static_data.h"
 
 
+
+
 // Uncomment for useful output when tinkering
 #define __DEBUG__
+
 
 // Debugging helpers
 #define DSTR(L,X) fprintf(stdout, "%s => %s\n", L, X);
 #define DHEX(L,X) fprintf(stdout, "%s => %08X\n", L, (unsigned int)X);
+#define DULONG(L,X) fprintf(stdout, "%s => %lu\n", L, (unsigned long)X);
+
 
 
 /**
@@ -94,7 +99,7 @@ Uint32 scan_map(PlTerm atom_list, char** keys, Uint32* flags)
 	{
 	  if ((atom = Pl_Rd_Atom(cells[i])))
 	  {
-	    result |= map_lookup(Pl_Atom_Name(atom),
+ 	    result |= map_lookup(Pl_Atom_Name(atom),
 				 gstr_InitModes,
 				 gbit_InitModes);
 	  }
@@ -116,27 +121,15 @@ Uint32 scan_map(PlTerm atom_list, char** keys, Uint32* flags)
 /**
  * Perform standard SDL library initialisation.
  *
- *  flag_list is assumed to be a list of atoms corresponding to the
- *  SDL_INIT_XXX flag. If you pass in junk it will just be ignored. If
- *  at least one bit flag is given then the function should complete
- *  successfully.
- *
- *  atoms recognised:
- *
- *    timer, audio, video, init_joystick, haptic
- *    gamecontroller, events, everything, parachute
- *
- * @param PlTerm flag_list
+ * @param PlLong flags mask
  *
  * @return PL_TRUE | PL_FALSE
  *
  * @see https://wiki.libsdl.org/SDL_Init
  *--------------------------------------------------------------------
  */
-PlBool gp_sdl_init(PlTerm flag_list)
+PlBool gp_sdl_init(PlLong flags)
 {
-  Uint32 flags = scan_map(flag_list, gstr_InitModes, gbit_InitModes);
-
   if (flags > 0)
   {
     if (0 == SDL_Init(flags))
@@ -180,35 +173,74 @@ PlBool gp_sdl_quit()
  *        Wnd).
  *
  * @param char*  title   atom or string containing the window title
- * @param PlTerm x       centered | undefined | <integer-value>
- * @param PlTerm y       centered | undefined | <integer-value>
+ * @param PlLong x       centered | undefined | <integer-value>
+ * @param PlLong y       centered | undefined | <integer-value>
  * @param PlLong w       width of the window
  * @param PlLong h       height of the window
- * @param PlTerm flags   one or more SDL_WindowFlags
+ * @param PlLong flags   one or more SDL_WindowFlags as a bit mask
  * @param PlTerm handle  an UNINSTANTIATED variable to hold the handle
  *
  * @return PL_TRUE | PL_FALSE
  *
  * @see https://wiki.libsdl.org/SDL_CreateWindow
  */
-PlBool gp_createwindow(char*  title,
-		       PlTerm xpos,
-		       PlTerm ypos,
-		       PlLong width,
-		       PlLong height,
-		       PlTerm flag_list,
-		       PlLong *handle)
+PlBool gp_createwindow(char*  title, PlLong xpos, PlLong ypos, PlLong width,
+		       PlLong height, PlLong flags, PlLong *handle)
 {
-  Uint32 flags = scan_map(flag_list, gstr_CwModes, gbit_CwModes);
-  SDL_Window* wnd = SDL_CreateWindow(title, 100, 100, 640, 480, 0);
+  SDL_Window* wnd = SDL_CreateWindow(title, 100, 100, 640, 480, flags);
 
   if (wnd)
   {
     *handle = (PlLong)wnd;
+
     return PL_TRUE;
   }
   RETURN_SDL_FAIL(SDL_CreateWindow);
 }
+
+
+
+/* PlBool term_atom_or_positive(PlTerm x, char** keys, Uint32* ) */
+/* { */
+/*   int atom; */
+/*   Uint32 value; */
+/*   PlLong lValue; */
+  
+/*   switch(Pl_Type_Of_Term(x)) */
+/*   { */
+/*   case PL_ATM: */
+/*     atom = Pl_Rd_Atom(x); */
+/*     value = map_lookup(Pl_Atom_Name(atom), gstr_CwPos, gbit_CwPos); */
+
+/*     if (0 == value) { */
+/*       Pl_Set_C_Bip_Name("sdl_createwindow", 7); */
+/*       Pl_Err_Syntax(Pl_Create_Atom("undefined|centered|<integer> expected")); */
+/*     } */
+
+/*     DHEX("pos", value); */
+/*     break; */
+
+/*   case PL_INT: */
+/*     lValue = Pl_Rd_Positive(x); */
+/*     DULONG("arse:positive", value); */
+/*     break; */
+
+/*   default: */
+/*     // throw an error: incorrect type */
+/*     Pl_Set_C_Bip_Name("sdl_createwindow", 7); */
+/*     Pl_Err_Syntax(Pl_Create_Atom("atom or integer expected")); */
+/*     break; */
+/*   } */
+  
+/*   return PL_TRUE; */
+/* } */
+
+PlBool arse(PlTerm x)
+{
+  //  Uint32 = term_atom_or_positive(x, gstr_CwPos, gbit_CwPos);
+  return PL_TRUE;
+}
+
 
 
 
