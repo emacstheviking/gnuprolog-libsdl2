@@ -1,35 +1,132 @@
+%%--------------------------------------------------------------------
+%% GNU Prolog SDL2 Module
+%%
+%% @author Sean James Charles
+%%
+%% This file contains the Prolog code that works in conjunction with
+%% sdl_lib.c to provide a hopefulyl useable binding / interface with
+%% libsdl2 for your platform. It was developed on OSX and also tried
+%% on Ubuntu 14.04 LTS but has never been tried on Windows. YMMV.
+%%
+%% All the predicates shown here are not all those available, some are
+%% written in pure C code.
+%%
+%% My approach, after a pure C initial attempt, was to leverage the
+%% power of Prolog to perform all parameter vetting etc to drastically
+%% reduce the amount of C code I had to write, it's slower and more
+%% error prone and of course it makes sense to use prolog for the
+%% heavy lifting.
+%%
+%%
+%% The end result is a core C library (sdl_lib.c) that does just
+%% enough to call the corresponding SDL library function and return
+%% the result into Prolog space.
+%%
+%% Any bug reports, improvements etc can be offered via GitHub.
+%%
+%%--------------------------------------------------------------------
+
+
+
+%%--------------------------------------------------------------------
+%%
+%% SDL_Init
+%%
+%%--------------------------------------------------------------------
+sdl_init :- sdl_init([everything]).
+
 sdl_init(Flags) :-
-	is_list(Flags),
-	sdl_make_flags(Flags, sdl_init_flags, Value),
+	sdl_make_flags(Flags, sdl_constants, Value),
 	gp_sdl_init(Value).
 
-sdl_quit :- gp_sdl_quit.
+
+%%--------------------------------------------------------------------
+%%
+%% SDL_CreateWindow
+%%
+%%--------------------------------------------------------------------
+sdl_createwindow(Title, X, Y, W, H, Flags, Wnd) :-
+	list(Title),
+	atomic(X), \+ float(X),
+	atomic(Y), \+ float(Y),
+	integer(W), integer(H),
+	list(Flags), var(Wnd),
+	sdl_make_flags(Flags, sdl_constants, Value),
+	gp_sdl_createwindow(Title, X, Y, W, H, Value, Wnd).
 
 
-%% for each entry in Flags
-%%  get corresponding video bit mask
-%%  bit wise OR to the total
-%%  repeat until Flags is []
 
 
+
+
+%%--------------------------------------------------------------------
+%%
+%% Internal support code for SDL module
+%%
+%%--------------------------------------------------------------------
+
+
+%%--------------------------------------------------------------------
+%% sdl_make_flags/3 -- helper
+%%--------------------------------------------------------------------
 sdl_make_flags([], _, 0).
 
 sdl_make_flags(Flags, FlagProvider, Out) :-
+	list(Flags),
+	atom(FlagProvider),
 	ReadFlags =.. [FlagProvider, Lookup],
 	call(ReadFlags),
 	sdl_scan_flags(Flags, Lookup, 0, Out).
 
+sdl_make_flags(_,Where,_) :-
+	Error =.. [Where, 'Check flags list and provider atom'], 
+	throw(Error).
 
+
+%%--------------------------------------------------------------------
+%% sdl_scan_flags/4 -- accumulator builder
+%%--------------------------------------------------------------------
 sdl_scan_flags([], _, Acc, Acc).
-sdl_scan_flags([H|T], Lookup, Acc, Out) :-
-	sdl_scan_map_lookup(H, Lookup),
+
+sdl_scan_flags([Flag|T], Lookup, Acc, Out) :-
+	member(Flag-Bit, Lookup),
 	Acc2 is Acc \/ Bit,
-	!, %% best position for the cut? can I lose it?
-	sdl_scan_map_acc(T, Acc2, Out).
+	sdl_scan_flags(T, Lookup, Acc2, Out).
 
-sdl_scan_flags([H|T], Lookup, Acc, Out) :-
+sdl_scan_flags([_|T], Lookup, Acc, Out) :-
+	sdl_scan_flags(T, Lookup, Acc, Out).
 
 
-sdl_init_flags([timer-0x000001, audio-0x000010, video-0x000020,
-		joystick-0x000200, haptic-0x001000, gamecontroller-0x002000,
-		events-0x004000, everything-0x007231, noparachute-0x100000]).
+%%--------------------------------------------------------------------
+%%
+%% Bit-based flag lookup tables.
+%%
+%% Lots of the SDL function use C constants to define various bit
+%% masks and values for setup and on-going operation.
+%%
+%% Initially they are all in one table, but if it feels right for
+%% performance reasons (if it ever becomes an issue) I plan to either
+%% have smaller separate tables or to use values in line at call site
+%% as hex values with a suitable comment.
+%%
+%% --------------------------------------------------------------------
+
+sdl_constants([
+	       %%
+	       %% SDL_Init
+	       %%
+	       timer          - 0x000001,
+	       audio          - 0x000010,
+	       video          - 0x000020,
+	       joystick       - 0x000200,
+	       haptic         - 0x001000,
+	       gamecontroller - 0x002000,
+	       events         - 0x004000,
+	       everything     - 0x007231,
+	       noparachute    - 0x100000,
+	       %%
+	       %% SDL_CreateWindow
+	       %%
+	       undefined      - 0x1fff0000,
+	       centered       - 0x2fff0000
+	      ]).

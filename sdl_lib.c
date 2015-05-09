@@ -184,8 +184,10 @@ PlBool gp_sdl_quit()
  *
  * @see https://wiki.libsdl.org/SDL_CreateWindow
  */
-PlBool gp_createwindow(char*  title, PlLong xpos, PlLong ypos, PlLong width,
-		       PlLong height, PlLong flags, PlLong *handle)
+PlBool gp_createwindow(char*  title,
+		       PlLong xpos,  PlLong ypos,
+		       PlLong width, PlLong height,
+		       PlLong flags, PlLong *handle)
 {
   SDL_Window* wnd = SDL_CreateWindow(title, 100, 100, 640, 480, flags);
 
