@@ -9,7 +9,7 @@ tags:
 	find ~/Documents/RUNTIMES/gprolog-1.4.4/src -name "*.c" | etags -a -
 
 sdl:
-	gplc -L -lsdl2 -o sdltest sdl_lib.pl sdl.pl sdl_lib.c
+	gplc -L -lsdl2 -o sdltest sdl.pl sdl_lib.c
 
 clean:
 	rm *~

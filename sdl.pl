@@ -3,13 +3,13 @@
 %%
 %% @author Sean James Charles
 %%
-%% This file contains the Prolog code that works in conjunction with
-%% sdl_lib.c to provide a hopefulyl useable binding / interface with
-%% libsdl2 for your platform. It was developed on OSX and also tried
-%% on Ubuntu 14.04 LTS but has never been tried on Windows. YMMV.
+%% This file contains the Prolog code that hopefulyl useable binding /
+%% interface with libsdl2 for your platform. It was developed on OSX
+%% and also tried on Ubuntu 14.04 LTS but has never been tried on
+%% Windows. YMMV.
 %%
-%% All the predicates shown here are not all those available, some are
-%% written in pure C code.
+%% All the Prolog predicates shown here are not all those available,
+%% some are written in pure C code, see sdl_lib.c for details.
 %%
 %% My approach, after a pure C initial attempt, was to leverage the
 %% power of Prolog to perform all parameter vetting etc to drastically
@@ -28,12 +28,14 @@
 
 
 
+
 %%--------------------------------------------------------------------
 %%
 %% SDL_Init
 %%
 %%--------------------------------------------------------------------
-sdl_init :- sdl_init([everything]).
+sdl_init :-
+	sdl_init([everything]).
 
 sdl_init(Flags) :-
 	sdl_make_flags(Flags, sdl_constants, Value),
@@ -101,15 +103,7 @@ sdl_scan_flags([_|T], Lookup, Acc, Out) :-
 %%
 %% Bit-based flag lookup tables.
 %%
-%% Lots of the SDL function use C constants to define various bit
-%% masks and values for setup and on-going operation.
-%%
-%% Initially they are all in one table, but if it feels right for
-%% performance reasons (if it ever becomes an issue) I plan to either
-%% have smaller separate tables or to use values in line at call site
-%% as hex values with a suitable comment.
-%%
-%% --------------------------------------------------------------------
+%%--------------------------------------------------------------------
 
 sdl_constants([
 	       %%
@@ -130,3 +124,42 @@ sdl_constants([
 	       undefined      - 0x1fff0000,
 	       centered       - 0x2fff0000
 	      ]).
+
+
+
+%%====================================================================
+%%
+%%                            FFI DEFINITIONS
+%%
+%%====================================================================
+%%--------------------------------------------------------------------
+%%
+%% gp_sdl_init                  SDL_Init
+%% gp_sdl_createwindow          SDL_CreateWindow      
+%% gp_sdl_destroywindow         SDL_DestroyWindow
+%% gp_sdl_delay                 SDL_Delay
+%%
+%%--------------------------------------------------------------------
+:- foreign(gp_sdl_init(+positive),
+	   [fct_name(gp_sdl_init), return(boolean)]).
+
+:- foreign(gp_sdl_createwindow(+codes,
+			       +integer, +integer,
+			       +integer, +integer,
+			       +integer, -positive),
+	   [fct_name(gp_createwindow), return(boolean)]).
+
+:- foreign(sdl_destroywindow(+positive),
+	   [fct_name(gp_destroywindow), return(boolean)]).
+
+:- foreign(sdl_delay(+positive),
+	   [fct_name(gp_delay), return(boolean)]).
+
+%%--------------------------------------------------------------------
+%%
+%% Pure C implementations
+%%
+%%--------------------------------------------------------------------
+:- foreign(sdl_quit,
+	   [fct_name(gp_sdl_quit), return(boolean)]).
+
