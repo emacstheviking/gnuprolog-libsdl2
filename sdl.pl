@@ -48,12 +48,16 @@ sdl_init(Flags) :-
 %%
 %%--------------------------------------------------------------------
 sdl_createwindow(Title, X, Y, W, H, Flags, Wnd) :-
+	var(Wnd),
 	list(Title),
 	atomic(X), \+ float(X),
 	atomic(Y), \+ float(Y),
-	integer(W), integer(H),
-	list(Flags), var(Wnd),
+	integer(W),
+	integer(H),
+	list(Flags),
 	sdl_make_flags(Flags, sdl_constants, Value),
+	format("gp_sdl_createwindow(~w, ~w, ~w, ~w, ~w, ~w, Wnd).~n",
+	       [Title, X, Y, W, H, Value]),
 	gp_sdl_createwindow(Title, X, Y, W, H, Value, Wnd).
 
 
@@ -81,7 +85,7 @@ sdl_make_flags(Flags, FlagProvider, Out) :-
 	sdl_scan_flags(Flags, Lookup, 0, Out).
 
 sdl_make_flags(_,Where,_) :-
-	Error =.. [Where, 'Check flags list and provider atom'], 
+	Error =.. [Where, 'Check flags list and provider atom'],
 	throw(Error).
 
 
@@ -124,42 +128,3 @@ sdl_constants([
 	       undefined      - 0x1fff0000,
 	       centered       - 0x2fff0000
 	      ]).
-
-
-
-%%====================================================================
-%%
-%%                            FFI DEFINITIONS
-%%
-%%====================================================================
-%%--------------------------------------------------------------------
-%%
-%% gp_sdl_init                  SDL_Init
-%% gp_sdl_createwindow          SDL_CreateWindow      
-%% gp_sdl_destroywindow         SDL_DestroyWindow
-%% gp_sdl_delay                 SDL_Delay
-%%
-%%--------------------------------------------------------------------
-:- foreign(gp_sdl_init(+positive),
-	   [fct_name(gp_sdl_init), return(boolean)]).
-
-:- foreign(gp_sdl_createwindow(+codes,
-			       +integer, +integer,
-			       +integer, +integer,
-			       +integer, -positive),
-	   [fct_name(gp_createwindow), return(boolean)]).
-
-:- foreign(sdl_destroywindow(+positive),
-	   [fct_name(gp_destroywindow), return(boolean)]).
-
-:- foreign(sdl_delay(+positive),
-	   [fct_name(gp_delay), return(boolean)]).
-
-%%--------------------------------------------------------------------
-%%
-%% Pure C implementations
-%%
-%%--------------------------------------------------------------------
-:- foreign(sdl_quit,
-	   [fct_name(gp_sdl_quit), return(boolean)]).
-
