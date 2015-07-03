@@ -1,12 +1,12 @@
 :- initialization(prep).
 
 prep :-
-	sdl_init([video]).
+	sdl_Init([video]).
 
 
 check_sdl :-
-	sdl_createwindow("fred", undefined, centered, 640, 480, [], W),
-	sdl_delay(2000),
-	sdl_destroywindow(W).
-
-
+	sdl_CreateWindow("fred", 0, 0, 640, 480, [], W),
+	sdl_Delay(2000),
+	sdl_SetWindowTitle(W, "Another title"),
+	sdl_Delay(2000),
+	sdl_DestroyWindow(W).

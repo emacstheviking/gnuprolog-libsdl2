@@ -13,9 +13,9 @@
 %%
 %% My approach, after a pure C initial attempt, was to leverage the
 %% power of Prolog to perform all parameter vetting etc to drastically
-%% reduce the amount of C code I had to write, it's slower and more
-%% error prone and of course it makes sense to use prolog for the
-%% heavy lifting.
+%% reduce the amount of C code I had to write, it's slower to write
+%% and more error prone and of course it makes sense to use Prolog for
+%% the heavy lifting.
 %%
 %%
 %% The end result is a core C library (sdl_lib.c) that does just
@@ -34,12 +34,11 @@
 %% SDL_Init
 %%
 %%--------------------------------------------------------------------
-sdl_init :-
-	sdl_init([everything]).
+sdl_Init :- sdl_Init([everything]).
 
-sdl_init(Flags) :-
-	sdl_make_flags(Flags, sdl_constants, Value),
-	gp_sdl_init(Value).
+sdl_Init(Flags) :-
+	sdl_make_flags(Flags, 'SDL_Init', Value),
+	sdl_Init_C(Value).
 
 
 %%--------------------------------------------------------------------
@@ -47,24 +46,44 @@ sdl_init(Flags) :-
 %% SDL_CreateWindow
 %%
 %%--------------------------------------------------------------------
-sdl_createwindow(Title, X, Y, W, H, Flags, Wnd) :-
+sdl_CreateWindow(Title, X, Y, Width, Height, Flags, Wnd) :-
 	var(Wnd),
 	list(Title),
 	atomic(X), \+ float(X),
 	atomic(Y), \+ float(Y),
-	integer(W),
-	integer(H),
+	%%integer(W),
+	%%integer(H),  centered or undefined are allowed =>!
 	list(Flags),
-	sdl_make_flags(Flags, sdl_constants, Value),
-	format("gp_sdl_createwindow(~w, ~w, ~w, ~w, ~w, ~w, Wnd).~n",
-	       [Title, X, Y, W, H, Value]),
-	gp_sdl_createwindow(Title, X, Y, W, H, Value, Wnd).
+	sdl_make_flags(Flags, 'SDL_CreateWindow', Value),
+	format("SDL.PL: sdl_CreateWindow_C(~w, ~w, ~w, ~w, ~w, ~w, Wnd).~n",
+	       [Title, X, Y, Width, Height, Value]),
+	sdl_CreateWindow_C(Title, X, Y, Width, Height, Value, Wnd).
 
 
+sdl_CreateRenderer(Wnd, Index, Flags, Renderer) :-
+	var(Renderer),
+	nonvar(Wnd),
+	integer(Index),
+	list(Flags),
+	sdl_make_flags(Flags, 'SDL_CreateWindow', Value),
+	format("SDL.PL: gp_SDL_CreateRenderer_C(~w, ~w, ~w, Rndr).~n",
+	       [Wnd, Index, Value]),
+	sdl_CreateRenderer_C(Wnd, Index, Value, Renderer).
 
 
+sdl_CreateWindowAndRenderer(Width, Height, Flags, Wnd, Rndr) :-
+	var(Wnd),
+	var(Rndr),
+	list(Flags), %% no vars in list! ? check!!
+	sdl_make_flags(Flags, 'SDL_CreateRenderer', Value),
+	format("SDL.PL: gp_SDL_CreateWindowAndRenderer_C(~w, ~w, ~w, Wnd, Rndr).~n",
+	       [Width, Height, Value]),
+	sdl_CreateWindowAndRenderer_C(Width, Height, Value, Wnd, Rndr).
 
 
+	
+
+			    
 %%--------------------------------------------------------------------
 %%
 %% Internal support code for SDL module
@@ -77,11 +96,10 @@ sdl_createwindow(Title, X, Y, W, H, Flags, Wnd) :-
 %%--------------------------------------------------------------------
 sdl_make_flags([], _, 0).
 
-sdl_make_flags(Flags, FlagProvider, Out) :-
+sdl_make_flags(Flags, FlagSet, Out) :-
 	list(Flags),
-	atom(FlagProvider),
-	ReadFlags =.. [FlagProvider, Lookup],
-	call(ReadFlags),
+	atom(FlagSet),
+	sdl_constants(FlagSet, Lookup),
 	sdl_scan_flags(Flags, Lookup, 0, Out).
 
 sdl_make_flags(_,Where,_) :-
@@ -109,22 +127,26 @@ sdl_scan_flags([_|T], Lookup, Acc, Out) :-
 %%
 %%--------------------------------------------------------------------
 
-sdl_constants([
-	       %%
-	       %% SDL_Init
-	       %%
-	       timer          - 0x000001,
-	       audio          - 0x000010,
-	       video          - 0x000020,
-	       joystick       - 0x000200,
-	       haptic         - 0x001000,
-	       gamecontroller - 0x002000,
-	       events         - 0x004000,
-	       everything     - 0x007231,
-	       noparachute    - 0x100000,
-	       %%
-	       %% SDL_CreateWindow
-	       %%
-	       undefined      - 0x1fff0000,
-	       centered       - 0x2fff0000
+sdl_constants('SDL_Init',
+	      [ timer          - 0x000001
+	      , audio          - 0x000010
+	      , video          - 0x000020
+	      , joystick       - 0x000200
+	      , haptic         - 0x001000
+	      , gamecontroller - 0x002000
+	      , events         - 0x004000
+	      , everything     - 0x007231
+	      , noparachute    - 0x100000
+	      ]).
+
+sdl_constants('SDL_CreateWindow',
+	      [ undefined     - 0x1fff0000
+	      , centered      - 0x2fff0000
+	      ]).
+
+sdl_constants('SDL_CreateRenderer',
+	      [ software - 0
+	      , accelerated - 0
+	      , presentvsync - 0
+	      , targettexture - 0
 	      ]).
