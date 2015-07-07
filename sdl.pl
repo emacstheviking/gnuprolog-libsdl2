@@ -60,6 +60,11 @@ sdl_CreateWindow(Title, X, Y, Width, Height, Flags, Wnd) :-
 	sdl_CreateWindow_C(Title, X, Y, Width, Height, Value, Wnd).
 
 
+%%--------------------------------------------------------------------
+%%
+%% SDL_CreateRenderer
+%%
+%%--------------------------------------------------------------------
 sdl_CreateRenderer(Wnd, Index, Flags, Renderer) :-
 	var(Renderer),
 	nonvar(Wnd),
@@ -80,6 +85,12 @@ sdl_CreateWindowAndRenderer(Width, Height, Flags, Wnd, Rndr) :-
 	       [Width, Height, Value]),
 	sdl_CreateWindowAndRenderer_C(Width, Height, Value, Wnd, Rndr).
 
+
+%%--------------------------------------------------------------------
+%%
+%% SDL_CreateTexture
+%%
+%%--------------------------------------------------------------------
 
 	
 

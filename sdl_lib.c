@@ -53,8 +53,6 @@ PlBool gp_SDL_Init(PlLong flags)
 }
 
 
-
-
 /**
  * Shutdown the SDL library.
  *
@@ -67,8 +65,6 @@ PlBool gp_SDL_Quit()
 
   return PL_TRUE;
 }
-
-
 
 
 /**
@@ -108,8 +104,6 @@ PlBool gp_SDL_CreateWindow(char*  title,
 }
 
 
-
-
 /**
  * SDL_DestroyWindow
  *
@@ -122,14 +116,10 @@ PlBool gp_SDL_CreateWindow(char*  title,
  */
 PlBool gp_SDL_DestroyWindow(PlLong handle)
 {
-  SDL_Window *wnd = (SDL_Window*)handle;
-
-  SDL_DestroyWindow(wnd);
+  SDL_DestroyWindow((SDL_Window*)handle);
 
   return PL_TRUE;
 }
-
-
 
 
 /**
@@ -153,7 +143,6 @@ PlBool gp_SDL_SetWindowTitle(PlLong wnd, char* title)
    
     return PL_TRUE;
 }
-
 
 
 /**
@@ -180,8 +169,6 @@ PlBool gp_SDL_CreateRenderer(PlLong *handle, PlLong index, PlLong flags, PlLong 
 
   RETURN_SDL_FAIL(SDL_CreateRenderer);
 }
-
-
 
 
 /**
@@ -215,27 +202,132 @@ PlBool gp_SDL_CreateWindowAndRenderer(
 }
 
 
-
-
 /**
  * SDL_DestroyRenderer
  *
  * Use this function to destroy the rendering context for a window and
  * free associated textures.
  *
- * @param PlLong handle  references the window to be killed
+ * @param PlLong handle  references the renderer to be killed
  *
  * @return PL_TRUE
  *
  */
 PlBool gp_SDL_DestroyRenderer(PlLong handle)
 {
-  SDL_Window *wnd = (SDL_Window*)handle;
-
-  SDL_DestroyWindow(wnd);
+  SDL_DestroyRenderer((SDL_Renderer*)handle);
 
   return PL_TRUE;
 }
+
+
+PlBool gp_SDL_SetRenderDrawColor(PlLong rndr, PlLong r, PlLong g, PlLong b, PlLong a)
+{
+  SDL_SetRenderDrawColor((SDL_Renderer*)rndr, r, g, b, a);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderClear(PlLong rndr)
+{
+  SDL_RenderClear((SDL_Renderer*)rndr);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderPresent(PlLong rndr)
+{
+  SDL_RenderPresent((SDL_Renderer*)rndr);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderDrawPoint(PlLong rndr, PlLong x, PlLong y)
+{
+  SDL_RenderDrawPoint((SDL_Renderer*)rndr, (int)x, (int)y);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderDrawLine(
+    PlLong rndr,
+    PlLong x1, PlLong y1,
+    PlLong x2, PlLong y2)
+{
+  SDL_RenderDrawLine((SDL_Renderer*)rndr, (int)x1, (int)y1, (int)x2, (int)y2);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderDrawRect(
+    PlLong rndr,
+    PlLong x, PlLong y,
+    PlLong w, PlLong h)
+{
+  SDL_Rect rect;
+  rect.x = x;
+  rect.y = y;
+  rect.w = w;
+  rect.h = h;
+
+  SDL_RenderDrawRect((SDL_Renderer*)rndr, &rect);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderFillRect(
+    PlLong rndr,
+    PlLong x, PlLong y,
+    PlLong w, PlLong h)
+{
+  SDL_Rect rect;
+  rect.x = x;
+  rect.y = y;
+  rect.w = w;
+  rect.h = h;
+  SDL_RenderFillRect((SDL_Renderer*)rndr, &rect);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_CreateTexture_C(
+    PlLong rndr,
+    PlLong format, PlLong access,
+    PlLong w, PlLong h,
+    PlLong *texture)
+{
+  SDL_Texture* pTexture = SDL_CreateTexture(
+      (SDL_Renderer*)rndr,
+      format,
+      access,
+      w, h);
+
+  if (pTexture)
+  {
+    *texture = (PlLong)pTexture;
+    return PL_TRUE;
+  }
+
+  RETURN_SDL_FAIL(SDL_CreateTexture);
+}
+
+
+PlBool gp_SDL_DestroyTexture(PlLong texture)
+{
+  SDL_DestroyTexture((SDL_Texture*)texture);
+
+  return PL_TRUE;
+}
+
+
+
 
 
 
