@@ -49,7 +49,12 @@
 :- foreign(sdl_CreateTexture(+positive, +integer, +integer, +integer, +integer, -positive),
 	   [fct_name(gp_SDL_CreateTexture_C)]).
 
+%% Event functions
+
+:- foreign(sdl_PollEvent(-term), [fct_name(gp_SDL_PollEvent)]).
+
 
 %% General functions
 
 :- foreign(sdl_Delay(+positive), [fct_name(gp_SDL_Delay)]).
+:- foreign(sdl_GetTicks(-integer), [fct_name(gp_SDL_GetTicks)]).

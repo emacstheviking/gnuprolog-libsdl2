@@ -1,8 +1,7 @@
 check_sdl :-
 	sdl_Init([video]),
 	sdl_CreateWindow("fred", 0, 0, 640, 480, [], W),
-	sdl_Delay(2000),
-	sdl_SetWindowTitle(W, "Another title"),
+	evloop,
 	sdl_Delay(2000),
 	sdl_DestroyWindow(W),
 	sdl_Quit.
@@ -61,3 +60,25 @@ textest :-
 	sdl_DestroyRenderer(R),
 	sdl_DestroyWindow(W),
 	sdl_Quit.
+
+evtest :-
+	sdl_Init([video]),
+	evloop,
+	sdl_Quit.
+
+evloop :-
+	sdl_PollEvent(E),
+	handle_event(E),
+	sdl_Delay(25),
+	!,
+	evloop.
+
+evloop.
+
+
+handle_event(keyup(_,_,released,_,_,27,_)) :-
+	format("ESC pressed~n", []),
+	!,
+	fail.
+
+handle_event(_).

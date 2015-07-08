@@ -140,7 +140,7 @@ PlBool gp_SDL_SetWindowTitle(PlLong wnd, char* title)
     fprintf(stderr, "gp_SDL_SetWindowTitle: %p => %s\n",
 	    (SDL_Window*)wnd, title);
 #endif
-   
+
     return PL_TRUE;
 }
 
@@ -194,7 +194,7 @@ PlBool gp_SDL_CreateWindowAndRenderer(
   {
     *wnd = (PlLong)wnd;
     *renderer = (PlLong)renderer;
-    
+
     return PL_TRUE;
   }
 
@@ -327,6 +327,54 @@ PlBool gp_SDL_DestroyTexture(PlLong texture)
 }
 
 
+PlBool gp_SDL_PollEvent(PlTerm *event)
+{
+  SDL_Event ev;
+  PlTerm term;
+  char szTerm[63+1];
+
+  if (0 == SDL_PollEvent(&ev)) {
+    *event = Pl_Mk_Integer(-1);
+  }
+  else {
+    switch(ev.type)
+    {
+	case SDL_KEYDOWN:
+	case SDL_KEYUP:
+	  sprintf(szTerm,
+	  	  "%s(%u,%u,%s,%s,%u,%u,%u)",
+	  	  ev.type == SDL_KEYDOWN ? "keydown" : "keyup",
+	  	  ev.key.timestamp,
+	  	  ev.key.windowID,
+	  	  ev.key.state == SDL_PRESSED ? "pressed" : "released",
+	  	  ev.key.repeat ? "repeat" : "first",
+	  	  ev.key.keysym.scancode,
+	  	  ev.key.keysym.sym,
+	  	  ev.key.keysym.mod);
+	  break;
+
+	default:
+	  sprintf(szTerm, "unhandled(%u)", ev.type);
+    }
+
+    term = Pl_Read_From_String(szTerm);
+    Pl_Copy_Term(event, &term);
+
+#ifdef __DEBUG__
+    fprintf(stdout, "sdl_PollEvent: %s\n", szTerm);
+#endif
+  }
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_GetTicks(PlLong *ticks)
+{
+  *ticks = (PlLong)SDL_GetTicks();
+
+  return PL_TRUE;
+}
+
 
 
 
@@ -364,7 +412,7 @@ PlBool gp_SDL_Delay(PlLong delay_in_milliseconds)
 /*   int atom; */
 /*   Uint32 value; */
 /*   PlLong lValue; */
-  
+
 /*   switch(Pl_Type_Of_Term(x)) */
 /*   { */
 /*   case PL_ATM: */
@@ -390,7 +438,7 @@ PlBool gp_SDL_Delay(PlLong delay_in_milliseconds)
 /*     Pl_Err_Syntax(Pl_Create_Atom("atom or integer expected")); */
 /*     break; */
 /*   } */
-  
+
 /*   return PL_TRUE; */
 /* } */
 
