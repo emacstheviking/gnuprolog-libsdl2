@@ -49,6 +49,11 @@ draw_a_dot(R, N) :-
 	draw_a_dot(R, N2).
 
 
+%%--------------------------------------------------------------------
+%%
+%% Textures
+%%
+%%--------------------------------------------------------------------
 textest :-
 	sdl_Init([video]),
 	sdl_CreateWindow("fred", 0, 0, 640, 480, [], W),
@@ -61,6 +66,12 @@ textest :-
 	sdl_DestroyWindow(W),
 	sdl_Quit.
 
+
+%%--------------------------------------------------------------------
+%%
+%% Event Handling
+%%
+%%--------------------------------------------------------------------
 evtest :-
 	sdl_Init([video]),
 	evloop,
@@ -72,13 +83,14 @@ evloop :-
 	sdl_Delay(25),
 	!,
 	evloop.
+evloop. %% keep going on poll fail i.e. no event!
 
-evloop.
 
-
-handle_event(keyup(_,_,released,_,_,27,_)) :-
-	format("ESC pressed~n", []),
-	!,
-	fail.
-
+%%--------------------------------------------------------------------
+%%
+%% Event handlers...
+%%
+%%--------------------------------------------------------------------
+handle_event(quit(_)) :- format("QUIT selected~n", []), !, fail.
+handle_event(keyup(_,_,released,_,_,27,_)) :- format("ESC pressed~n", []), !, fail.
 handle_event(_).

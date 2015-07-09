@@ -29,6 +29,15 @@
   return PL_FALSE;
 
 
+//====================================================================
+// Event utilities: creating the compound term to describe the event.
+//====================================================================
+#define EV(F) F(&ev, &szTerm[0])
+#define EVB(F) F(&ev, &szTerm[0]); break
+#define EVWRAPPER(F) void F(SDL_Event *e, char* t)
+
+EVWRAPPER(evKbd);
+EVWRAPPER(evQuit);
 
 
 /**
@@ -341,18 +350,10 @@ PlBool gp_SDL_PollEvent(PlTerm *event)
     {
 	case SDL_KEYDOWN:
 	case SDL_KEYUP:
-	  sprintf(szTerm,
-	  	  "%s(%u,%u,%s,%s,%u,%u,%u)",
-	  	  ev.type == SDL_KEYDOWN ? "keydown" : "keyup",
-	  	  ev.key.timestamp,
-	  	  ev.key.windowID,
-	  	  ev.key.state == SDL_PRESSED ? "pressed" : "released",
-	  	  ev.key.repeat ? "repeat" : "first",
-	  	  ev.key.keysym.scancode,
-	  	  ev.key.keysym.sym,
-	  	  ev.key.keysym.mod);
-	  break;
+	  EVB(evKbd);
 
+	case SDL_QUIT:
+	  EVB(evQuit);
 	default:
 	  sprintf(szTerm, "unhandled(%u)", ev.type);
     }
@@ -376,20 +377,6 @@ PlBool gp_SDL_GetTicks(PlLong *ticks)
 }
 
 
-
-
-
-
-PlBool arse(PlTerm x)
-{
-  //  Uint32 = term_atom_or_positive(x, gstr_CwPos, gbit_CwPos);
-  return PL_TRUE;
-}
-
-
-
-
-
 /**
  * SDL_Delay
  *
@@ -405,3 +392,24 @@ PlBool gp_SDL_Delay(PlLong delay_in_milliseconds)
 
   return PL_TRUE;
 }
+
+
+//====================================================================
+// Event utilities: creating the compound term to describe the event.
+//====================================================================
+
+EVWRAPPER(evQuit) {
+  sprintf(t,"quit(%u)", e->quit.timestamp);}
+
+EVWRAPPER(evKbd) {
+  sprintf(t,
+	  "%s(%u,%u,%s,%s,%u,%u,%u)",
+	  e->type == SDL_KEYDOWN ? "keydown" : "keyup",
+	  e->key.timestamp,
+	  e->key.windowID,
+	  e->key.state == SDL_PRESSED ? "pressed" : "released",
+	  e->key.repeat ? "repeat" : "first",
+	  e->key.keysym.scancode,
+	  e->key.keysym.sym,
+	  e->key.keysym.mod); }
+
