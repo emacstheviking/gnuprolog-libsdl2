@@ -20,6 +20,10 @@
 #define DULONG(L,X) fprintf(stdout, "%s => %lu\n", L, (unsigned long)X);
 
 
+// These are created during SDL_Init to avoid repetition
+int g_atomTextInput = 0;
+int g_atomTextEditing = 0;
+
 
 /**
  * Helper macro for SDL error return from predicate.
@@ -36,9 +40,15 @@
 #define EVB(F) F(&ev, &szTerm[0]); break
 #define EVWRAPPER(F) void F(SDL_Event *e, char* t)
 
+// [EV]ent wrapper writing own term [O]utput
+#define EVB_TERM(F) F(&ev, &szTerm[0], &term); break
+#define EVWRAPPER_TERM(F) void F(SDL_Event *e, char* t, PlTerm *o)
+
+
+
 EVWRAPPER(evKbd);
-EVWRAPPER(evTextEditing);
-EVWRAPPER(evTextInput);
+EVWRAPPER_TERM(evTextEditing);
+EVWRAPPER_TERM(evTextInput);
 EVWRAPPER(evQuit);
 EVWRAPPER(evWindow);
 EVWRAPPER(evDropEvent);
@@ -60,6 +70,10 @@ const char* evWindowType(int);
  */
 PlBool gp_SDL_Init(PlLong flags)
 {
+  // One-time (well...) atom creation
+  g_atomTextInput = Pl_Create_Atom("text_input");
+  g_atomTextEditing = Pl_Create_Atom("text_editing");
+  
   if (flags > 0)
   {
     if (0 == SDL_Init(flags))
@@ -359,28 +373,36 @@ PlBool gp_SDL_PollEvent(PlTerm *event)
   else {
     switch(ev.type)
     {
-	case SDL_KEYDOWN:
-	case SDL_KEYUP:	           EVB(evKbd);
-	case SDL_TEXTEDITING:      EVB(evTextEditing);
-	case SDL_TEXTINPUT:        EVB(evTextInput);
-	case SDL_QUIT:             EVB(evQuit);
-	case SDL_WINDOWEVENT:      EVB(evWindow);
 	case SDL_MOUSEBUTTONDOWN:
 	case SDL_MOUSEBUTTONUP:    EVB(evMouseButton);
 	case SDL_MOUSEMOTION:      EVB(evMouseMotion);
 	case SDL_MOUSEWHEEL:       EVB(evMouseWheel);
+	case SDL_WINDOWEVENT:      EVB(evWindow);
+
+	case SDL_KEYDOWN:
+	case SDL_KEYUP:	           EVB(evKbd);
+
+	case SDL_TEXTEDITING:      EVB_TERM(evTextEditing);
+	case SDL_TEXTINPUT:        EVB_TERM(evTextInput);
+
+	case SDL_QUIT:             EVB(evQuit);
 	case SDL_DROPFILE:         EVB(evDropEvent);
 
 	default:
 	  sprintf(szTerm, "unhandled(%u)", ev.type);
     }
-    fprintf(stdout, "**szTERM**:%s\n", szTerm);
-    term = Pl_Read_From_String(szTerm);
-    Pl_Copy_Term(event, &term);
+
+    // Only copy the term if the term string was written to
+    // otherwise we assume the *handler* wrote into "term"
+    if (szTerm[0]) {
+      term = Pl_Read_From_String(szTerm);
+    }
 
 #ifdef __DEBUG__
-    fprintf(stdout, "sdl_PollEvent: %s\n", szTerm);
+    Pl_Write(term); fprintf(stdout, "\n");
 #endif
+
+    Pl_Copy_Term(event, &term);
   }
   return PL_TRUE;
 }
@@ -470,26 +492,29 @@ EVWRAPPER(evKbd) {
 	  e->key.keysym.mod); }
 
 
-EVWRAPPER(evTextEditing) {
+EVWRAPPER_TERM(evTextEditing) {
   // TODO: dynamic allocation for large strings!
-  // TODO: convert text.text into a list of codes!
-  sprintf(t,
-	  "text_editing(%u,%u,\"%s\",%i,%i)",
-	  e->edit.timestamp,
-	  e->edit.windowID,
-	  e->edit.text,
-	  e->edit.start,
-	  e->edit.length); }
+  PlTerm timestamp  = Pl_Mk_Integer((PlLong)e->edit.timestamp);
+  PlTerm windowID   = Pl_Mk_Integer((PlLong)e->edit.windowID);
+  PlTerm textBuffer = Pl_Mk_Codes(e->edit.text);
+  PlTerm start      = Pl_Mk_Integer(e->edit.start);
+  PlTerm length     = Pl_Mk_Integer(e->edit.length);
+  PlTerm args[]     = {timestamp, windowID, textBuffer, start, length};
+
+  *t = 0;
+  *o = Pl_Mk_Compound(g_atomTextEditing, 5, &args[0]);
+}
 
 
-EVWRAPPER(evTextInput) {
-  // TODO: dynamic allocation for large strings!
-  // TODO: convert text.text into a list of codes!
-  sprintf(t,
-	  "text_input(%u,%u,\"%s\")",
-	  e->text.timestamp,
-	  e->text.windowID,
-	  e->text.text); }
+EVWRAPPER_TERM(evTextInput) {
+  PlTerm timestamp  = Pl_Mk_Integer((PlLong)e->text.timestamp);
+  PlTerm windowID   = Pl_Mk_Integer((PlLong)e->text.windowID);
+  PlTerm textBuffer = Pl_Mk_Codes(e->text.text);
+  PlTerm args[]     = {timestamp, windowID, textBuffer};
+
+  *t = 0;
+  *o = Pl_Mk_Compound(g_atomTextInput, 3, &args[0]);
+}
 
 
 EVWRAPPER(evWindow) {
