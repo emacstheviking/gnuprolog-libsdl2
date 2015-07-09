@@ -56,5 +56,7 @@
 
 %% General functions
 
-:- foreign(sdl_Delay(+positive), [fct_name(gp_SDL_Delay)]).
+:- foreign(sdl_Delay(+positive),   [fct_name(gp_SDL_Delay)]).
 :- foreign(sdl_GetTicks(-integer), [fct_name(gp_SDL_GetTicks)]).
+
+:- foreign(sdl_ShowSimpleMessageBox_C(+integer, +codes, +codes), [fct_name(gp_SDL_ShowSimpleMessageBox_C)]).

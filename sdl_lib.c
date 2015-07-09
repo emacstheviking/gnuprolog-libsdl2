@@ -38,6 +38,14 @@
 
 EVWRAPPER(evKbd);
 EVWRAPPER(evQuit);
+EVWRAPPER(evWindow);
+EVWRAPPER(evDropEvent);
+EVWRAPPER(evMouseButton);
+EVWRAPPER(evMouseMotion);
+EVWRAPPER(evMouseWheel);
+
+const char* evWindowType(int);
+
 
 
 /**
@@ -349,11 +357,14 @@ PlBool gp_SDL_PollEvent(PlTerm *event)
     switch(ev.type)
     {
 	case SDL_KEYDOWN:
-	case SDL_KEYUP:
-	  EVB(evKbd);
+	case SDL_KEYUP:	           EVB(evKbd);
+	case SDL_QUIT:             EVB(evQuit);
+	case SDL_WINDOWEVENT:      EVB(evWindow);
+	case SDL_MOUSEBUTTONDOWN:
+	case SDL_MOUSEBUTTONUP:    EVB(evMouseButton);
+	case SDL_MOUSEMOTION:      EVB(evMouseMotion);
+	case SDL_DROPFILE:         EVB(evDropEvent);
 
-	case SDL_QUIT:
-	  EVB(evQuit);
 	default:
 	  sprintf(szTerm, "unhandled(%u)", ev.type);
     }
@@ -394,12 +405,21 @@ PlBool gp_SDL_Delay(PlLong delay_in_milliseconds)
 }
 
 
+PlBool gp_SDL_ShowSimpleMessageBox_C(PlLong flags, char* title, char* message)
+{
+  SDL_ShowSimpleMessageBox(flags, title, message, NULL);
+
+  return PL_TRUE;
+}
+
+
 //====================================================================
 // Event utilities: creating the compound term to describe the event.
 //====================================================================
 
 EVWRAPPER(evQuit) {
   sprintf(t,"quit(%u)", e->quit.timestamp);}
+
 
 EVWRAPPER(evKbd) {
   sprintf(t,
@@ -413,3 +433,84 @@ EVWRAPPER(evKbd) {
 	  e->key.keysym.sym,
 	  e->key.keysym.mod); }
 
+
+EVWRAPPER(evWindow) {
+  sprintf(t,
+	  "window(%u,%u,%s)",
+	  e->window.timestamp,
+	  e->window.windowID,
+	  evWindowType(e->window.event)); }
+
+
+EVWRAPPER(evDropEvent) {
+#ifdef __DEBUG__
+  fprintf(stdout, "DROP FILE: %s\n", e->drop.file);
+#endif
+  sprintf(t,
+	  "dropfile(%u,%s)",
+	  e->drop.timestamp,
+	  e->drop.file
+	  ); // TODO: Buffer sizwe for long filenames!
+}
+
+
+EVWRAPPER(evMouseButton) {
+  sprintf(t,
+	  "%s(%u,%u,%u,%i,%s,%i,%i,%i)",
+	  e->type == SDL_MOUSEBUTTONDOWN ? "mouse_down" : "mouse_up",
+	  e->button.timestamp,
+	  e->button.windowID,
+	  e->button.which,
+	  e->button.button,
+	  e->button.state == SDL_PRESSED ? "pressed" : "released",
+	  e->button.clicks,
+	  e->button.x,
+	  e->button.y); }
+
+
+EVWRAPPER(evMouseMotion) {
+  sprintf(t,
+	  "mouse_motion(%u,%u,%u,%u,%i,%i,%i,%i)",
+	  e->motion.timestamp,
+	  e->motion.windowID,
+	  e->motion.which,
+	  e->motion.state,
+	  e->motion.x,
+	  e->motion.y,
+	  e->motion.xrel,
+	  e->motion.yrel
+	  ); }
+
+
+EVWRAPPER(evMouseWheel) {
+  sprintf(t,
+	  "mouse_wheel(%u,%u,%u,%i,%i)",
+	  e->motion.timestamp,
+	  e->motion.windowID,
+	  e->motion.which,
+	  e->motion.x,
+	  e->motion.y); }
+
+
+//--------------------------------------------------------------------
+// Wrapper helper functions...
+//--------------------------------------------------------------------
+const char* evWindowType(int id) {
+  switch(id) {
+      case SDL_WINDOWEVENT_SHOWN: return "shown";
+      case SDL_WINDOWEVENT_HIDDEN: return "hidden";
+      case SDL_WINDOWEVENT_EXPOSED: return "exposed";
+      case SDL_WINDOWEVENT_MOVED: return "moved";
+      case SDL_WINDOWEVENT_RESIZED: return "resized";
+      case SDL_WINDOWEVENT_SIZE_CHANGED: return "size_changed";
+      case SDL_WINDOWEVENT_MINIMIZED: return "minimized";
+      case SDL_WINDOWEVENT_MAXIMIZED: return "maximized";
+      case SDL_WINDOWEVENT_RESTORED: return "restored";
+      case SDL_WINDOWEVENT_ENTER: return "enter";
+      case SDL_WINDOWEVENT_LEAVE: return "leave";
+      case SDL_WINDOWEVENT_FOCUS_GAINED: return "focus_gained";
+      case SDL_WINDOWEVENT_FOCUS_LOST: return "focus_lost";
+      case SDL_WINDOWEVENT_CLOSE: return "close";
+      default: return "unknown";
+  }
+}

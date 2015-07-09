@@ -92,6 +92,23 @@ sdl_CreateWindowAndRenderer(Width, Height, Flags, Wnd, Rndr) :-
 %%
 %%--------------------------------------------------------------------
 
+
+%%--------------------------------------------------------------------
+%%
+%% SDL_ShowSimpleMessageBox
+%%
+%%--------------------------------------------------------------------
+sdl_ShowSimpleMessageBox(Title, Message) :-
+	sdl_ShowSimpleMessageBox(Title, Message, [information]).
+
+sdl_ShowSimpleMessageBox(Title, Message, Flags) :-
+	list(Flags),
+	list(Title),
+	list(Message),
+	sdl_make_flags(Flags, 'SDL_ShowSimpleMessageBox', Value),
+	sdl_ShowSimpleMessageBox_C(Title, Message, Value).
+	
+	
 	
 
 			    
