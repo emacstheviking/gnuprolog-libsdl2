@@ -310,6 +310,7 @@ PlBool gp_SDL_RenderFillRect(
   rect.y = y;
   rect.w = w;
   rect.h = h;
+
   SDL_RenderFillRect((SDL_Renderer*)rndr, &rect);
 
   return PL_TRUE;
@@ -413,6 +414,36 @@ PlBool gp_SDL_Delay(PlLong delay_in_milliseconds)
 PlBool gp_SDL_ShowSimpleMessageBox_C(PlLong flags, char* title, char* message)
 {
   SDL_ShowSimpleMessageBox(flags, title, message, NULL);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_StartTextInput()
+{
+  SDL_StartTextInput();
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_StopTextInput()
+{
+  SDL_StopTextInput();
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_SetTextInputRect(PlLong x, PlLong y, PlLong w, PlLong h)
+{
+  SDL_Rect rect;
+  rect.x = x;
+  rect.y = y;
+  rect.w = w;
+  rect.h = h;
+
+  SDL_SetTextInputRect(&rect);
 
   return PL_TRUE;
 }

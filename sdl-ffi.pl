@@ -54,9 +54,19 @@
 :- foreign(sdl_PollEvent(-term), [fct_name(gp_SDL_PollEvent)]).
 
 
+%% Text input functions
+
+:- foreign(sdl_StartTextInput, [fct_name(gp_SDL_StartTextInput)]).
+:- foreign(sdl_StopTextInput,  [fct_name(gp_SDL_StopTextInput)]).
+
+:- foreign(sdl_SetTextInputRect(+integer, +integer, +integer, +integer),
+	   [fct_name(gp_SDL_SetTextInputRect)]).
+
+
 %% General functions
 
 :- foreign(sdl_Delay(+positive),   [fct_name(gp_SDL_Delay)]).
 :- foreign(sdl_GetTicks(-integer), [fct_name(gp_SDL_GetTicks)]).
 
-:- foreign(sdl_ShowSimpleMessageBox_C(+integer, +codes, +codes), [fct_name(gp_SDL_ShowSimpleMessageBox_C)]).
+:- foreign(sdl_ShowSimpleMessageBox_C(+integer, +codes, +codes),
+	   [fct_name(gp_SDL_ShowSimpleMessageBox_C)]).
