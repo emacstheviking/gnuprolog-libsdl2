@@ -1,7 +1,7 @@
 check_sdl :-
 	sdl_Init([video]),
-	WndW=1024,
-	WndH=768,
+	WndW=640,
+	WndH=480,
 	sdl_CreateWindow("fred", 0, 0, WndW, WndH, [], W),
 	evloop,
 	sdl_Delay(2000),
@@ -10,8 +10,8 @@ check_sdl :-
 
 drawtest :-
 	sdl_Init([video]),
-	WndW=1024,
-	WndH=768,
+	WndW=640,
+	WndH=480,
 	sdl_CreateWindow("fred", 0, 0, WndW, WndH, [], W),
 	sdl_CreateRenderer(W, -1, [], R),
 	sdl_SetRenderDrawColor(R, 0, 0, 0, 255),
@@ -92,7 +92,7 @@ evloop(Callback) :-
 	call(Callback),
 	sdl_PollEvent(E),
 	handle_event(E),
-	sdl_Delay(250),
+	sdl_Delay(1),
 	!,
 	evloop(Callback).
 

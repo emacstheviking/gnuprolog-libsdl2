@@ -37,6 +37,8 @@
 #define EVWRAPPER(F) void F(SDL_Event *e, char* t)
 
 EVWRAPPER(evKbd);
+EVWRAPPER(evTextEditing);
+EVWRAPPER(evTextInput);
 EVWRAPPER(evQuit);
 EVWRAPPER(evWindow);
 EVWRAPPER(evDropEvent);
@@ -358,11 +360,14 @@ PlBool gp_SDL_PollEvent(PlTerm *event)
     {
 	case SDL_KEYDOWN:
 	case SDL_KEYUP:	           EVB(evKbd);
+	case SDL_TEXTEDITING:      EVB(evTextEditing);
+	case SDL_TEXTINPUT:        EVB(evTextInput);
 	case SDL_QUIT:             EVB(evQuit);
 	case SDL_WINDOWEVENT:      EVB(evWindow);
 	case SDL_MOUSEBUTTONDOWN:
 	case SDL_MOUSEBUTTONUP:    EVB(evMouseButton);
 	case SDL_MOUSEMOTION:      EVB(evMouseMotion);
+	case SDL_MOUSEWHEEL:       EVB(evMouseWheel);
 	case SDL_DROPFILE:         EVB(evDropEvent);
 
 	default:
@@ -432,6 +437,26 @@ EVWRAPPER(evKbd) {
 	  e->key.keysym.scancode,
 	  e->key.keysym.sym,
 	  e->key.keysym.mod); }
+
+
+EVWRAPPER(evTextEditing) {
+  // TODO: dynamic allocation for large strings!
+  sprintf(t,
+	  "text_editing(%u,%u,%s,%i,%i)",
+	  e->edit.timestamp,
+	  e->edit.windowID,
+	  e->edit.text,
+	  e->edit.start,
+	  e->edit.length); }
+
+
+EVWRAPPER(evTextInput) {
+  // TODO: dynamic allocation for large strings!
+  sprintf(t,
+	  "text_input(%u,%u,%s)",
+	  e->text.timestamp,
+	  e->text.windowID,
+	  e->text.text); }
 
 
 EVWRAPPER(evWindow) {
