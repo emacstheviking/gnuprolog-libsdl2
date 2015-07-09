@@ -21,8 +21,25 @@ drawtest :-
 	sdl_Quit.
 
 drawstuff(R, WndW, WndH) :-
-	draw_a_box(R, WndW, WndH),
+	draw_a_circle(R, WndW, WndH),
 	sdl_RenderPresent(R).
+
+
+circletest :-
+	sdl_Init([video]),
+	WndW=640,
+	WndH=480,
+	sdl_CreateWindow("fred", 0, 0, WndW, WndH, [], W),
+	sdl_CreateRenderer(W, -1, [], R),
+	sdl_SetRenderDrawColor(R, 0, 0, 0, 255),
+	sdl_RenderClear(R),
+	sdl_SetRenderDrawColor(R, 255, 255, 255, 255),
+	sdl_RenderDrawCircle(R, 320, 240, 100),
+	sdl_RenderPresent(R),
+	sdl_Delay(60000),
+	sdl_DestroyRenderer(R),
+	sdl_DestroyWindow(W),
+	sdl_Quit.
 
 draw_a_box(R, WndW, WndH) :-
 	random(0, WndW, X),
@@ -34,6 +51,16 @@ draw_a_box(R, WndW, WndH) :-
 	random(0, 255, Blu),
 	sdl_SetRenderDrawColor(R, Red, Grn, Blu, 255),
 	sdl_RenderFillRect(R, X, Y, W, H).
+
+draw_a_circle(R, WndW, WndH) :-
+	random(0, WndW, X),
+	random(0, WndH, Y),
+	random(50, 300, Radius),
+	random(0, 255, Red),
+	random(0, 255, Grn),
+	random(0, 255, Blu),
+	sdl_SetRenderDrawColor(R, Red, Grn, Blu, 255),
+	sdl_RenderDrawCircle(R, X, Y, Radius).
 
 draw_a_dot(_, 0) :-
 	!.

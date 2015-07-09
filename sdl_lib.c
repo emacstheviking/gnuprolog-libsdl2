@@ -23,6 +23,7 @@
 // These are created during SDL_Init to avoid repetition
 int g_atomTextInput = 0;
 int g_atomTextEditing = 0;
+int g_atomDropFile = 0;
 
 
 /**
@@ -33,29 +34,29 @@ int g_atomTextEditing = 0;
   return PL_FALSE;
 
 
-//====================================================================
-// Event utilities: creating the compound term to describe the event.
-//====================================================================
+
 #define EV(F) F(&ev, &szTerm[0])
 #define EVB(F) F(&ev, &szTerm[0]); break
 #define EVWRAPPER(F) void F(SDL_Event *e, char* t)
 
-// [EV]ent wrapper writing own term [O]utput
-#define EVB_TERM(F) F(&ev, &szTerm[0], &term); break
-#define EVWRAPPER_TERM(F) void F(SDL_Event *e, char* t, PlTerm *o)
-
-
-
+// These create response with Pl_Read_From_String
 EVWRAPPER(evKbd);
-EVWRAPPER_TERM(evTextEditing);
-EVWRAPPER_TERM(evTextInput);
 EVWRAPPER(evQuit);
 EVWRAPPER(evWindow);
-EVWRAPPER(evDropEvent);
 EVWRAPPER(evMouseButton);
 EVWRAPPER(evMouseMotion);
 EVWRAPPER(evMouseWheel);
 
+
+#define EVB_TERM(F) F(&ev, &szTerm[0], &term); break
+#define EVWRAPPER_TERM(F) void F(SDL_Event *e, char* t, PlTerm *o)
+
+// These create resposne with Pl_Mk_Compound
+EVWRAPPER_TERM(evTextEditing);
+EVWRAPPER_TERM(evTextInput);
+EVWRAPPER_TERM(evDropEvent);
+
+// Maps event codes into strings for atom conversion
 const char* evWindowType(int);
 
 
@@ -70,10 +71,10 @@ const char* evWindowType(int);
  */
 PlBool gp_SDL_Init(PlLong flags)
 {
-  // One-time (well...) atom creation
   g_atomTextInput = Pl_Create_Atom("text_input");
   g_atomTextEditing = Pl_Create_Atom("text_editing");
-  
+  g_atomDropFile = Pl_Create_Atom("dropfile");
+
   if (flags > 0)
   {
     if (0 == SDL_Init(flags))
@@ -386,7 +387,7 @@ PlBool gp_SDL_PollEvent(PlTerm *event)
 	case SDL_TEXTINPUT:        EVB_TERM(evTextInput);
 
 	case SDL_QUIT:             EVB(evQuit);
-	case SDL_DROPFILE:         EVB(evDropEvent);
+	case SDL_DROPFILE:         EVB_TERM(evDropEvent);
 
 	default:
 	  sprintf(szTerm, "unhandled(%u)", ev.type);
@@ -525,15 +526,17 @@ EVWRAPPER(evWindow) {
 	  evWindowType(e->window.event)); }
 
 
-EVWRAPPER(evDropEvent) {
+EVWRAPPER_TERM(evDropEvent) {
 #ifdef __DEBUG__
   fprintf(stdout, "DROP FILE: %s\n", e->drop.file);
 #endif
-  sprintf(t,
-	  "dropfile(%u,%s)",
-	  e->drop.timestamp,
-	  e->drop.file
-	  ); // TODO: Buffer sizwe for long filenames!
+
+  PlTerm timestamp = Pl_Mk_Integer((PlLong)e->drop.timestamp);
+  PlTerm filename  = Pl_Mk_Codes(e->drop.file);
+  PlTerm args[]     = {timestamp, filename};
+
+  *t = 0;
+  *o = Pl_Mk_Compound(g_atomDropFile, 2, &args[0]);
 }
 
 
@@ -596,4 +599,38 @@ const char* evWindowType(int id) {
       case SDL_WINDOWEVENT_CLOSE: return "close";
       default: return "unknown";
   }
+}
+
+
+//https://en.wikipedia.org/wiki/Midpoint_circle_algorithm#Drawing_Incomplete_Octants
+PlBool gp_SDL_RenderDrawCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong radius)
+{
+  SDL_Renderer *rndr = (SDL_Renderer*)renderer;
+
+  int x = radius;
+  int y = 0;
+  int decisionOver2 = 1 - x;
+
+  while(x>=y) {
+    SDL_RenderDrawPoint(rndr, x + x0,  y + y0);
+    SDL_RenderDrawPoint(rndr, y + x0,  x + y0);
+    SDL_RenderDrawPoint(rndr, -x + x0,  y + y0);
+    SDL_RenderDrawPoint(rndr, -y + x0,  x + y0);
+    SDL_RenderDrawPoint(rndr, -x + x0, -y + y0);
+    SDL_RenderDrawPoint(rndr, -y + x0, -x + y0);
+    SDL_RenderDrawPoint(rndr, x + x0, -y + y0);
+    SDL_RenderDrawPoint(rndr, y + x0, -x + y0);
+    y++;
+
+    if (decisionOver2<=0) {
+      // Change in decision criterion for y -> y+1
+      decisionOver2 += (y<<1)+1;
+    }
+    else {
+      x--;
+      // Change for y -> y+1, x -> x-1
+      decisionOver2 += ((y - x)<<1)+1;
+    }
+  }
+  return PL_TRUE;
 }

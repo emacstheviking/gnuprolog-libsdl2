@@ -70,3 +70,9 @@
 
 :- foreign(sdl_ShowSimpleMessageBox_C(+integer, +codes, +codes),
 	   [fct_name(gp_SDL_ShowSimpleMessageBox_C)]).
+
+
+%% ADDITIONS to "SDL" for your convenience!
+
+:- foreign(sdl_RenderDrawCircle(+positive, +integer, +integer, +integer),
+	  [fct_name(gp_SDL_RenderDrawCircle)]).
