@@ -374,7 +374,7 @@ PlBool gp_SDL_PollEvent(PlTerm *event)
 	default:
 	  sprintf(szTerm, "unhandled(%u)", ev.type);
     }
-
+    fprintf(stdout, "**szTERM**:%s\n", szTerm);
     term = Pl_Read_From_String(szTerm);
     Pl_Copy_Term(event, &term);
 
@@ -472,8 +472,9 @@ EVWRAPPER(evKbd) {
 
 EVWRAPPER(evTextEditing) {
   // TODO: dynamic allocation for large strings!
+  // TODO: convert text.text into a list of codes!
   sprintf(t,
-	  "text_editing(%u,%u,%s,%i,%i)",
+	  "text_editing(%u,%u,\"%s\",%i,%i)",
 	  e->edit.timestamp,
 	  e->edit.windowID,
 	  e->edit.text,
@@ -483,8 +484,9 @@ EVWRAPPER(evTextEditing) {
 
 EVWRAPPER(evTextInput) {
   // TODO: dynamic allocation for large strings!
+  // TODO: convert text.text into a list of codes!
   sprintf(t,
-	  "text_input(%u,%u,%s)",
+	  "text_input(%u,%u,\"%s\")",
 	  e->text.timestamp,
 	  e->text.windowID,
 	  e->text.text); }

@@ -4,7 +4,6 @@ check_sdl :-
 	WndH=480,
 	sdl_CreateWindow("fred", 0, 0, WndW, WndH, [], W),
 	evloop,
-	sdl_Delay(2000),
 	sdl_DestroyWindow(W),
 	sdl_Quit.
 
@@ -16,7 +15,6 @@ drawtest :-
 	sdl_CreateRenderer(W, -1, [], R),
 	sdl_SetRenderDrawColor(R, 0, 0, 0, 255),
 	sdl_RenderClear(R),
-	sdl_Delay(1000),
 	evloop(drawstuff(R, WndW, WndH)),
 	sdl_DestroyRenderer(R),
 	sdl_DestroyWindow(W),
