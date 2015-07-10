@@ -602,34 +602,52 @@ const char* evWindowType(int id) {
 }
 
 
-//https://en.wikipedia.org/wiki/Midpoint_circle_algorithm#Drawing_Incomplete_Octants
-PlBool gp_SDL_RenderDrawCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong radius)
+PlBool gp_SDL_RenderDrawCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong radius, PlLong filled)
 {
   SDL_Renderer *rndr = (SDL_Renderer*)renderer;
 
   int x = radius;
   int y = 0;
   int decisionOver2 = 1 - x;
-
-  while(x>=y) {
-    SDL_RenderDrawPoint(rndr, x + x0,  y + y0);
-    SDL_RenderDrawPoint(rndr, y + x0,  x + y0);
-    SDL_RenderDrawPoint(rndr, -x + x0,  y + y0);
-    SDL_RenderDrawPoint(rndr, -y + x0,  x + y0);
-    SDL_RenderDrawPoint(rndr, -x + x0, -y + y0);
-    SDL_RenderDrawPoint(rndr, -y + x0, -x + y0);
-    SDL_RenderDrawPoint(rndr, x + x0, -y + y0);
-    SDL_RenderDrawPoint(rndr, y + x0, -x + y0);
-    y++;
-
-    if (decisionOver2<=0) {
-      // Change in decision criterion for y -> y+1
-      decisionOver2 += (y<<1)+1;
+  // Based on:
+  //https://en.wikipedia.org/wiki/Midpoint_circle_algorithm#Drawing_Incomplete_Octants
+  //
+  // ...with minor tweaks: flipped if/else and used pre-decrement on x
+  // ... filled/non-filled is unrolled hence apparent duplication
+  if(0 == filled) {
+    while(x >= y)
+    {
+      SDL_RenderDrawPoint(rndr,  x + x0,  y + y0);
+      SDL_RenderDrawPoint(rndr,  y + x0,  x + y0);
+      SDL_RenderDrawPoint(rndr, -x + x0,  y + y0);
+      SDL_RenderDrawPoint(rndr, -y + x0,  x + y0);
+      SDL_RenderDrawPoint(rndr, -x + x0, -y + y0);
+      SDL_RenderDrawPoint(rndr, -y + x0, -x + y0);
+      SDL_RenderDrawPoint(rndr,  x + x0, -y + y0);
+      SDL_RenderDrawPoint(rndr,  y + x0, -x + y0);
+    }
+    y++;    
+    if (decisionOver2>0) {
+      decisionOver2 += ((y - (--x))<<1)+1;
     }
     else {
-      x--;
-      // Change for y -> y+1, x -> x-1
-      decisionOver2 += ((y - x)<<1)+1;
+      decisionOver2 += (y<<1)+1;
+    }
+  }
+  else {
+    while(x >= y)
+    {
+      SDL_RenderDrawLine(rndr,  x + x0,  y + y0,  x + x0, -y + y0);
+      SDL_RenderDrawLine(rndr,  y + x0,  x + y0,  y + x0, -x + y0);
+      SDL_RenderDrawLine(rndr, -x + x0,  y + y0, -x + x0, -y + y0);
+      SDL_RenderDrawLine(rndr, -y + x0,  x + y0, -y + x0, -x + y0);
+      y++;
+      if (decisionOver2>0) {
+	decisionOver2 += ((y - (--x))<<1)+1;
+      }
+      else {
+	decisionOver2 += (y<<1)+1;
+      }
     }
   }
   return PL_TRUE;

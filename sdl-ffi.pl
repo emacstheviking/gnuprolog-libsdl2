@@ -74,5 +74,6 @@
 
 %% ADDITIONS to "SDL" for your convenience!
 
-:- foreign(sdl_RenderDrawCircle(+positive, +integer, +integer, +integer),
+%%                              Renderer   centre-x  centre-y  radius    filled(1)
+:- foreign(sdl_RenderDrawCircle(+positive, +integer, +integer, +integer, +integer),
 	  [fct_name(gp_SDL_RenderDrawCircle)]).

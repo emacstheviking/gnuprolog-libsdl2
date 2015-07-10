@@ -21,7 +21,7 @@ drawtest :-
 	sdl_Quit.
 
 drawstuff(R, WndW, WndH) :-
-	draw_a_circle(R, WndW, WndH),
+	draw_a_box(R, WndW, WndH),
 	sdl_RenderPresent(R).
 
 
@@ -33,8 +33,14 @@ circletest :-
 	sdl_CreateRenderer(W, -1, [], R),
 	sdl_SetRenderDrawColor(R, 0, 0, 0, 255),
 	sdl_RenderClear(R),
-	sdl_SetRenderDrawColor(R, 255, 255, 255, 255),
-	sdl_RenderDrawCircle(R, 320, 240, 100),
+	sdl_SetRenderDrawColor(R, 255, 0, 0, 255),
+	sdl_RenderDrawCircle(R, 320, 240, 200, 1),
+	sdl_SetRenderDrawColor(R, 255, 0, 255, 255),
+	sdl_RenderDrawCircle(R, 320, 240, 150, 1),
+	sdl_SetRenderDrawColor(R, 0, 255, 255, 255),
+	sdl_RenderDrawCircle(R, 320, 240, 100, 1),
+	sdl_SetRenderDrawColor(R, 0, 0, 255, 255),
+	sdl_RenderDrawCircle(R, 320, 240, 50, 1),
 	sdl_RenderPresent(R),
 	sdl_Delay(60000),
 	sdl_DestroyRenderer(R),
