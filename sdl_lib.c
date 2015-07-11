@@ -210,7 +210,7 @@ PlBool gp_SDL_CreateRenderer(PlLong *handle, PlLong index, PlLong flags, PlLong 
  *
  * Use this function to create a window and default renderer.
  *
- * @param PlTerm handle  a valid window handle from gp_create_window
+ * @param PlLong handle  a valid window handle from gp_create_window
  * @param PlLong index   index of the rendering driver
  * @param PlLong flags   one or more SDL_RendererFlags as a bit mask
  *
@@ -434,10 +434,19 @@ PlBool gp_SDL_Delay(PlLong delay_in_milliseconds)
 }
 
 
+/**
+ * SDL_ShowSimpleMessageBox
+ *
+ * @param PlLong flags   simple message box flags
+ * @param char*  title   C-string title of the message
+ * @param char*  message C-string content of the message
+ *
+ * @return PL_TRUE
+ */
 PlBool gp_SDL_ShowSimpleMessageBox_C(PlLong flags, char* title, char* message)
 {
   SDL_ShowSimpleMessageBox(flags, title, message, NULL);
-
+ 
   return PL_TRUE;
 }
 
@@ -477,7 +486,8 @@ PlBool gp_SDL_SetTextInputRect(PlLong x, PlLong y, PlLong w, PlLong h)
 //====================================================================
 
 EVWRAPPER(evQuit) {
-  sprintf(t,"quit(%u)", e->quit.timestamp);}
+  sprintf(t,"quit(%u)", e->quit.timestamp);
+}
 
 
 EVWRAPPER(evKbd) {
@@ -490,7 +500,8 @@ EVWRAPPER(evKbd) {
 	  e->key.repeat ? "repeat" : "first",
 	  e->key.keysym.scancode,
 	  e->key.keysym.sym,
-	  e->key.keysym.mod); }
+	  e->key.keysym.mod);
+}
 
 
 EVWRAPPER_TERM(evTextEditing) {
@@ -523,7 +534,8 @@ EVWRAPPER(evWindow) {
 	  "window(%u,%u,%s)",
 	  e->window.timestamp,
 	  e->window.windowID,
-	  evWindowType(e->window.event)); }
+	  evWindowType(e->window.event));
+}
 
 
 EVWRAPPER_TERM(evDropEvent) {
@@ -551,7 +563,8 @@ EVWRAPPER(evMouseButton) {
 	  e->button.state == SDL_PRESSED ? "pressed" : "released",
 	  e->button.clicks,
 	  e->button.x,
-	  e->button.y); }
+	  e->button.y);
+}
 
 
 EVWRAPPER(evMouseMotion) {
@@ -565,7 +578,8 @@ EVWRAPPER(evMouseMotion) {
 	  e->motion.y,
 	  e->motion.xrel,
 	  e->motion.yrel
-	  ); }
+	  );
+}
 
 
 EVWRAPPER(evMouseWheel) {
@@ -575,7 +589,8 @@ EVWRAPPER(evMouseWheel) {
 	  e->motion.windowID,
 	  e->motion.which,
 	  e->motion.x,
-	  e->motion.y); }
+	  e->motion.y);
+}
 
 
 //--------------------------------------------------------------------
@@ -602,30 +617,34 @@ const char* evWindowType(int id) {
 }
 
 
-PlBool gp_SDL_RenderDrawCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong radius, PlLong filled)
+/**
+ * Pseudo-SDL: SDL_RenderDrawCircle
+ *
+ * @param PlLong renderer  a valid handle to an SDL_Renderer*
+ * @param PlLong x0        circle x-position of centre
+ * @param PlLong y0        circle y-position of centre
+ * @param PlLong radius    pixel radius of the circle
+ *
+ * @return PL_TRUE
+ */
+PlBool gp_SDL_RenderDrawCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong radius)
 {
   SDL_Renderer *rndr = (SDL_Renderer*)renderer;
 
   int x = radius;
   int y = 0;
   int decisionOver2 = 1 - x;
-  // Based on:
-  //https://en.wikipedia.org/wiki/Midpoint_circle_algorithm#Drawing_Incomplete_Octants
-  //
-  // ...with minor tweaks: flipped if/else and used pre-decrement on x
-  // ... filled/non-filled is unrolled hence apparent duplication
-  if(0 == filled) {
-    while(x >= y)
-    {
-      SDL_RenderDrawPoint(rndr,  x + x0,  y + y0);
-      SDL_RenderDrawPoint(rndr,  y + x0,  x + y0);
-      SDL_RenderDrawPoint(rndr, -x + x0,  y + y0);
-      SDL_RenderDrawPoint(rndr, -y + x0,  x + y0);
-      SDL_RenderDrawPoint(rndr, -x + x0, -y + y0);
-      SDL_RenderDrawPoint(rndr, -y + x0, -x + y0);
-      SDL_RenderDrawPoint(rndr,  x + x0, -y + y0);
-      SDL_RenderDrawPoint(rndr,  y + x0, -x + y0);
-    }
+
+  while(x >= y)
+  {
+    SDL_RenderDrawPoint(rndr,  x + x0,  y + y0);
+    SDL_RenderDrawPoint(rndr,  y + x0,  x + y0);
+    SDL_RenderDrawPoint(rndr, -x + x0,  y + y0);
+    SDL_RenderDrawPoint(rndr, -y + x0,  x + y0);
+    SDL_RenderDrawPoint(rndr, -x + x0, -y + y0);
+    SDL_RenderDrawPoint(rndr, -y + x0, -x + y0);
+    SDL_RenderDrawPoint(rndr,  x + x0, -y + y0);
+    SDL_RenderDrawPoint(rndr,  y + x0, -x + y0);
     y++;    
     if (decisionOver2>0) {
       decisionOver2 += ((y - (--x))<<1)+1;
@@ -634,20 +653,41 @@ PlBool gp_SDL_RenderDrawCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong rad
       decisionOver2 += (y<<1)+1;
     }
   }
-  else {
-    while(x >= y)
-    {
-      SDL_RenderDrawLine(rndr,  x + x0,  y + y0,  x + x0, -y + y0);
-      SDL_RenderDrawLine(rndr,  y + x0,  x + y0,  y + x0, -x + y0);
-      SDL_RenderDrawLine(rndr, -x + x0,  y + y0, -x + x0, -y + y0);
-      SDL_RenderDrawLine(rndr, -y + x0,  x + y0, -y + x0, -x + y0);
-      y++;
-      if (decisionOver2>0) {
-	decisionOver2 += ((y - (--x))<<1)+1;
-      }
-      else {
-	decisionOver2 += (y<<1)+1;
-      }
+
+  return PL_TRUE;
+}
+
+
+/**
+ * Pseudo-SDL: SDL_RenderFillCircle
+ *
+ * @param PlLong renderer  a valid handle to an SDL_Renderer*
+ * @param PlLong x0        circle x-position of centre
+ * @param PlLong y0        circle y-position of centre
+ * @param PlLong radius    pixel radius of the circle
+ *
+ * @return PL_TRUE
+ */
+PlBool gp_SDL_RenderFillCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong radius)
+{
+  SDL_Renderer *rndr = (SDL_Renderer*)renderer;
+
+  int x = radius;
+  int y = 0;
+  int decisionOver2 = 1 - x;
+
+  while(x >= y)
+  {
+    SDL_RenderDrawLine(rndr,  x + x0,  y + y0,  x + x0, -y + y0);
+    SDL_RenderDrawLine(rndr,  y + x0,  x + y0,  y + x0, -x + y0);
+    SDL_RenderDrawLine(rndr, -x + x0,  y + y0, -x + x0, -y + y0);
+    SDL_RenderDrawLine(rndr, -y + x0,  x + y0, -y + x0, -x + y0);
+    y++;
+    if (decisionOver2>0) {
+      decisionOver2 += ((y - (--x))<<1)+1;
+    }
+    else {
+      decisionOver2 += (y<<1)+1;
     }
   }
   return PL_TRUE;

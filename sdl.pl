@@ -168,13 +168,19 @@ sdl_constants('SDL_Init',
 	      ]).
 
 sdl_constants('SDL_CreateWindow',
-	      [ undefined     - 0x1fff0000
-	      , centered      - 0x2fff0000
+	      [ undefined      - 0x1fff0000
+	      , centered       - 0x2fff0000
+	      ]).
+
+sdl_constants('SDL_ShowSimpleMessageBox',
+	      [ error          - 0x00000010
+	      , warning        - 0x00000020
+	      , information    - 0x00000040
 	      ]).
 
 sdl_constants('SDL_CreateRenderer',
-	      [ software - 0
-	      , accelerated - 0
-	      , presentvsync - 0
-	      , targettexture - 0
+	      [ software       - 0x00000001
+	      , accelerated    - 0x00000002
+	      , presentvsync   - 0x00000004
+	      , targettexture  - 0x00000008
 	      ]).
