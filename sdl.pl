@@ -34,7 +34,8 @@
 %% SDL_Init
 %%
 %%--------------------------------------------------------------------
-sdl_Init :- sdl_Init([everything]).
+sdl_Init :-
+	sdl_Init([everything]).
 
 sdl_Init(Flags) :-
 	sdl_make_flags(Flags, 'SDL_Init', Value),
@@ -55,9 +56,13 @@ sdl_CreateWindow(Title, X, Y, Width, Height, Flags, Wnd) :-
 	%%integer(H),  centered or undefined are allowed =>!
 	list(Flags),
 	sdl_make_flags(Flags, 'SDL_CreateWindow', Value),
-	format("SDL.PL: sdl_CreateWindow_C(~w, ~w, ~w, ~w, ~w, ~w, Wnd).~n",
-	       [Title, X, Y, Width, Height, Value]),
 	sdl_CreateWindow_C(Title, X, Y, Width, Height, Value, Wnd).
+
+
+sdl_SetWindowFullScreen(Wnd, Flags) :-
+	sdl_make_flags('SDL_SetWindowFullScreen', Flags, Value),
+	sdl_SetWindowFullScreen_C(Wnd, Value).
+
 
 
 %%--------------------------------------------------------------------
@@ -154,7 +159,6 @@ sdl_scan_flags([_|T], Lookup, Acc, Out) :-
 %% Bit-based flag lookup tables.
 %%
 %%--------------------------------------------------------------------
-
 sdl_constants('SDL_Init',
 	      [ timer          - 0x000001
 	      , audio          - 0x000010
@@ -183,4 +187,33 @@ sdl_constants('SDL_CreateRenderer',
 	      , accelerated    - 0x00000002
 	      , presentvsync   - 0x00000004
 	      , targettexture  - 0x00000008
+	      ]).
+
+sdl_constants('SDL_CreateTexture',
+	      [ software       - 0x00000001
+	      , accelerated    - 0x00000002
+	      , presentvsync   - 0x00000004
+	      , targettexture  - 0x00000008
+	      ]).
+
+sdl_constants('SDL_SetWindowFullScreen',
+	      [ fullscreen         - 0x00000001,
+		fullscreen_desktop - 0x000010001
+	      ]).
+
+sdl_constants('SDL_GetWindowFlags',
+	      [ fullscreen         - 0x00000001
+	      , fullscreen_desktop - 0x00010001
+	      , opengl             - 0x00000002
+	      , shown              - 0x00000004
+	      , hidden             - 0x00000008
+	      , borderless         - 0x00000010
+	      , resizable          - 0x00000020
+	      , minimized          - 0x00000040
+	      , maximized          - 0x00000080
+	      , input_grabbed      - 0x00000100
+	      , input_focus        - 0x00000200
+	      , mouse_focus        - 0x00000400
+	      , foreign            - 0x00000800
+	      , allow_highdpi      - 0x00002000
 	      ]).

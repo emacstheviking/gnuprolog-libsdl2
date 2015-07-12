@@ -92,10 +92,16 @@ textest :-
 	sdl_Init([video]),
 	sdl_CreateWindow("fred", 0, 0, 640, 480, [], W),
 	sdl_CreateRenderer(W, -1, [accelerated, presentvsync], R),
-	sdl_CreateTexture(T),
 
+	sdl_LoadBMP("test.bmp", Bmp),
+	sdl_CreateTextureFromSurface(R, Bmp, Tex),
+	sdl_FreeSurface(Bmp),
 
-	sdl_DestroyTexture(T),
+	sdl_RenderCopyDefaults(R, Tex),
+	sdl_RenderPresent(R),
+	sdl_Delay(10000),
+
+	sdl_DestroyTexture(Tex),
 	sdl_DestroyRenderer(R),
 	sdl_DestroyWindow(W),
 	sdl_Quit.

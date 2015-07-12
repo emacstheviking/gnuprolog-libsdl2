@@ -4,6 +4,7 @@
 
 #include <gprolog.h>
 #include <SDL2/SDL.h>
+//#include <SDL2/SDL_image.h>
 
 #include "static_data.h"
 
@@ -51,7 +52,7 @@ EVWRAPPER(evMouseWheel);
 #define EVB_TERM(F) F(&ev, &szTerm[0], &term); break
 #define EVWRAPPER_TERM(F) void F(SDL_Event *e, char* t, PlTerm *o)
 
-// These create resposne with Pl_Mk_Compound
+// These create response with Pl_Mk_Compound
 EVWRAPPER_TERM(evTextEditing);
 EVWRAPPER_TERM(evTextInput);
 EVWRAPPER_TERM(evDropEvent);
@@ -446,7 +447,7 @@ PlBool gp_SDL_Delay(PlLong delay_in_milliseconds)
 PlBool gp_SDL_ShowSimpleMessageBox_C(PlLong flags, char* title, char* message)
 {
   SDL_ShowSimpleMessageBox(flags, title, message, NULL);
- 
+
   return PL_TRUE;
 }
 
@@ -482,15 +483,39 @@ PlBool gp_SDL_SetTextInputRect(PlLong x, PlLong y, PlLong w, PlLong h)
 
 
 //====================================================================
-// Event utilities: creating the compound term to describe the event.
+//
+//                Event functors for sdl_PollEvent
+//
+// Each wrapper returns a functor+arguments to sdl_PollEvent(), the
+// order of arguments is the same as the standard SDL documentation so
+// it remains is to figure it out. Each comment header below contains
+// a description of the form, where <foo> is a variable value
+// extracted from the event record and things not in angle brackets
+// are atoms.
+//
 //====================================================================
 
-EVWRAPPER(evQuit) {
+
+//--------------------------------------------------------------------
+// quit( <timestamp> ).
+//--------------------------------------------------------------------
+EVWRAPPER(evQuit)
+{
   sprintf(t,"quit(%u)", e->quit.timestamp);
 }
 
 
-EVWRAPPER(evKbd) {
+//--------------------------------------------------------------------
+// keydown / keyup( <timestamp>,
+//                  <windowID>,
+//                  pressed / released,
+//                  repeat  / first,
+//                  <scancode>,
+//                  <sym>
+//                  <mod> ).
+//--------------------------------------------------------------------
+EVWRAPPER(evKbd)
+{
   sprintf(t,
 	  "%s(%u,%u,%s,%s,%u,%u,%u)",
 	  e->type == SDL_KEYDOWN ? "keydown" : "keyup",
@@ -504,21 +529,30 @@ EVWRAPPER(evKbd) {
 }
 
 
-EVWRAPPER_TERM(evTextEditing) {
-  // TODO: dynamic allocation for large strings!
-  PlTerm timestamp  = Pl_Mk_Integer((PlLong)e->edit.timestamp);
-  PlTerm windowID   = Pl_Mk_Integer((PlLong)e->edit.windowID);
-  PlTerm textBuffer = Pl_Mk_Codes(e->edit.text);
-  PlTerm start      = Pl_Mk_Integer(e->edit.start);
-  PlTerm length     = Pl_Mk_Integer(e->edit.length);
-  PlTerm args[]     = {timestamp, windowID, textBuffer, start, length};
+//--------------------------------------------------------------------
+// text_editing( <timestamp>, <windowID>, <text>, <start>, <length> ).
+//--------------------------------------------------------------------
+EVWRAPPER_TERM(evTextEditing)
+{
+  PlTerm args[] = {
+    Pl_Mk_Integer((PlLong)e->edit.timestamp),
+    Pl_Mk_Integer((PlLong)e->edit.windowID),
+    Pl_Mk_Codes(e->edit.text),
+    Pl_Mk_Integer(e->edit.start),
+    Pl_Mk_Integer(e->edit.length)
+  };
+  int argc = sizeof(args) / sizeof(PlTerm);
 
   *t = 0;
   *o = Pl_Mk_Compound(g_atomTextEditing, 5, &args[0]);
 }
 
 
-EVWRAPPER_TERM(evTextInput) {
+//--------------------------------------------------------------------
+// text_input( <timestamp>, <windowID>, <text> ).
+//--------------------------------------------------------------------
+EVWRAPPER_TERM(evTextInput)
+{
   PlTerm timestamp  = Pl_Mk_Integer((PlLong)e->text.timestamp);
   PlTerm windowID   = Pl_Mk_Integer((PlLong)e->text.windowID);
   PlTerm textBuffer = Pl_Mk_Codes(e->text.text);
@@ -529,7 +563,11 @@ EVWRAPPER_TERM(evTextInput) {
 }
 
 
-EVWRAPPER(evWindow) {
+//--------------------------------------------------------------------
+// window( <timestamp>, <windowID>, <window-event> ).
+//--------------------------------------------------------------------
+EVWRAPPER(evWindow)
+{
   sprintf(t,
 	  "window(%u,%u,%s)",
 	  e->window.timestamp,
@@ -538,7 +576,11 @@ EVWRAPPER(evWindow) {
 }
 
 
-EVWRAPPER_TERM(evDropEvent) {
+//--------------------------------------------------------------------
+// dropfile( <timestamp>, <filename> ).
+//--------------------------------------------------------------------
+EVWRAPPER_TERM(evDropEvent)
+{
 #ifdef __DEBUG__
   fprintf(stdout, "DROP FILE: %s\n", e->drop.file);
 #endif
@@ -552,7 +594,18 @@ EVWRAPPER_TERM(evDropEvent) {
 }
 
 
-EVWRAPPER(evMouseButton) {
+//--------------------------------------------------------------------
+// mouse_down / mouse_up ( <timestamp>,
+//                         <windowID>,
+//                         <which>,
+//                         <button>,
+//                         pressed / released,
+//                         <clicks>,
+//                         <x>,
+//                         <y> ).
+//--------------------------------------------------------------------
+EVWRAPPER(evMouseButton)
+{
   sprintf(t,
 	  "%s(%u,%u,%u,%i,%s,%i,%i,%i)",
 	  e->type == SDL_MOUSEBUTTONDOWN ? "mouse_down" : "mouse_up",
@@ -567,7 +620,18 @@ EVWRAPPER(evMouseButton) {
 }
 
 
-EVWRAPPER(evMouseMotion) {
+//--------------------------------------------------------------------
+// mouse_motion ( <timestamp>,
+//                <windowID>,
+//                <which>,
+//                <state>,
+//                <x>,
+//                <y>,
+//                <xrel>,
+//                <yrel> ).
+//--------------------------------------------------------------------
+EVWRAPPER(evMouseMotion)
+{
   sprintf(t,
 	  "mouse_motion(%u,%u,%u,%u,%i,%i,%i,%i)",
 	  e->motion.timestamp,
@@ -582,6 +646,14 @@ EVWRAPPER(evMouseMotion) {
 }
 
 
+//--------------------------------------------------------------------
+// mouse_wheel ( <timestamp>,
+//               <windowID>,
+//               <which>,
+//               <state>,
+//               <x>,
+//               <y> ).
+//--------------------------------------------------------------------
 EVWRAPPER(evMouseWheel) {
   sprintf(t,
 	  "mouse_wheel(%u,%u,%u,%i,%i)",
@@ -594,7 +666,7 @@ EVWRAPPER(evMouseWheel) {
 
 
 //--------------------------------------------------------------------
-// Wrapper helper functions...
+// Window Event -> Descriptive String for functor use.
 //--------------------------------------------------------------------
 const char* evWindowType(int id) {
   switch(id) {
@@ -616,6 +688,16 @@ const char* evWindowType(int id) {
   }
 }
 
+
+//--------------------------------------------------------------------
+//
+//
+//
+//                    Circle functions
+//
+//
+//
+//--------------------------------------------------------------------
 
 /**
  * Pseudo-SDL: SDL_RenderDrawCircle
@@ -645,7 +727,9 @@ PlBool gp_SDL_RenderDrawCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong rad
     SDL_RenderDrawPoint(rndr, -y + x0, -x + y0);
     SDL_RenderDrawPoint(rndr,  x + x0, -y + y0);
     SDL_RenderDrawPoint(rndr,  y + x0, -x + y0);
-    y++;    
+
+    y++;
+
     if (decisionOver2>0) {
       decisionOver2 += ((y - (--x))<<1)+1;
     }
@@ -682,7 +766,9 @@ PlBool gp_SDL_RenderFillCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong rad
     SDL_RenderDrawLine(rndr,  y + x0,  x + y0,  y + x0, -x + y0);
     SDL_RenderDrawLine(rndr, -x + x0,  y + y0, -x + x0, -y + y0);
     SDL_RenderDrawLine(rndr, -y + x0,  x + y0, -y + x0, -x + y0);
+
     y++;
+
     if (decisionOver2>0) {
       decisionOver2 += ((y - (--x))<<1)+1;
     }
@@ -692,3 +778,198 @@ PlBool gp_SDL_RenderFillCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong rad
   }
   return PL_TRUE;
 }
+
+
+//--------------------------------------------------------------------
+//
+//
+//
+//                Texture / Surface / Renderer Functions
+//
+//
+//
+//--------------------------------------------------------------------
+PlBool gp_SDL_LoadBMP(char* filename, PlLong *surface)
+{
+  SDL_Surface *image = SDL_LoadBMP(filename);
+
+  if (!image) {
+    return RETURN_SDL_FAIL(SDL_LoadBMP);
+  }
+
+  *surface = (PlLong)image;
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_FreeSurface(PlLong surface)
+{
+  SDL_FreeSurface((SDL_Surface*)surface);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_CreateTextureFromSurface(PlLong rndr, PlLong bitmap, PlLong *texture)
+{
+  SDL_Texture* tex = SDL_CreateTextureFromSurface(
+      (SDL_Renderer*)rndr,
+      (SDL_Surface*)bitmap);
+
+  if (!tex) {
+    RETURN_SDL_FAIL(SDL_CreateTextureFromSurface);
+  }
+
+  *texture = (PlLong)tex;
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderCopyDefaults(PlLong dstRenderer, PlLong srcTexture)
+{
+  SDL_RenderCopy(
+      (SDL_Renderer*)dstRenderer,
+      (SDL_Texture*)srcTexture,
+      NULL,
+      NULL);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderCopy(
+    PlLong dstRenderer,
+    PlLong dstX, PlLong dstY, PlLong dstW, PlLong dstH,
+    PlLong srcTexture,
+    PlLong srcX, PlLong srcY, PlLong srcW, PlLong srcH)
+{
+  SDL_Rect srcRect;
+  SDL_Rect dstRect;
+
+  srcRect.x = srcX;
+  srcRect.y = srcY;
+  srcRect.w = srcW;
+  srcRect.h = srcH;
+
+  dstRect.x = dstX;
+  dstRect.y = dstY;
+  dstRect.w = dstW;
+  dstRect.h = dstH;
+
+  SDL_RenderCopy(
+      (SDL_Renderer*)dstRenderer,
+      (SDL_Texture*)srcTexture,
+      &srcRect,
+      &dstRect);
+
+  return PL_TRUE;
+}
+
+
+//--------------------------------------------------------------------
+//
+//
+//
+//                    Display functions
+//
+//
+//
+//--------------------------------------------------------------------
+PlBool gp_SDL_GetNumVideoDisplays(PlLong *displayCount)
+{
+  int count = SDL_GetNumVideoDisplays();
+
+  if (count >= 1) {
+    *displayCount = (PlLong)count;
+  }
+
+  RETURN_SDL_FAIL(SDL_GetNumVideoDisplays);
+}
+
+
+PlBool gp_SDL_GetDisplayBounds(PlLong display, PlLong *x, PlLong *y, PlLong *w, PlLong *h)
+{
+  SDL_Rect rect;
+
+  if (0 == SDL_GetDisplayBounds((int)display, &rect)) {
+
+    *x = (PlLong)rect.x;
+    *y = (PlLong)rect.y;
+    *w = (PlLong)rect.w;
+    *h = (PlLong)rect.h;
+
+    return PL_TRUE;
+  }
+
+  RETURN_SDL_FAIL(SDL_GetDisplayBounds);
+}
+
+
+//--------------------------------------------------------------------
+//
+//
+//
+//                    Window functions
+//
+//
+//
+//--------------------------------------------------------------------
+PlBool gp_SDL_SetWindowFullScreen(PlLong window, PlLong flags)
+{
+  if (0 == SDL_SetWindowFullscreen((SDL_Window*)window,(Uint32)flags)) {
+    return PL_TRUE;
+  }
+
+  RETURN_SDL_FAIL(SDL_SetWindowFullScreen);
+}
+
+
+PlBool gp_SDL_GetWindowFlags(PlLong window, PlLong * flags)
+{
+  Uint32 wndFlags = SDL_GetWindowFlags((SDL_Window*)window);
+  *flags = (PlLong)wndFlags;
+
+  return PL_TRUE;
+}
+
+
+//--------------------------------------------------------------------
+//
+//
+//
+//                    Audio functions
+//
+//
+//
+//--------------------------------------------------------------------
+PlBool gp_SDL_GetNumAudioDevices(PlBool isCapture, PlLong *count)
+{
+  *count = (PlLong)SDL_GetNumAudioDevices((int)isCapture);
+
+  return PL_TRUE;
+}
+
+PlBool gp_SDL_GetNumAudioDrivers(PlLong *count)
+{
+  *count = (PlLong)SDL_GetNumAudioDrivers();
+
+  return PL_TRUE;
+}
+
+
+//--------------------------------------------------------------------
+//
+//
+//
+//                    Platform functions
+//
+//
+//
+//--------------------------------------------------------------------
+PlBool gp_SDL_GetPlatform(PlTerm *output)
+{
+  *output = Pl_Mk_Atom(Pl_Create_Atom(SDL_GetPlatform()));
+
+  return  PL_TRUE;
+}
+
