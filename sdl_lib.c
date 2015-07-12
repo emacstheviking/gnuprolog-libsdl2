@@ -22,14 +22,13 @@
 
 
 // These are created during SDL_Init to avoid repetition
-int g_atomTextInput = 0;
+int g_atomTextInput   = 0;
 int g_atomTextEditing = 0;
-int g_atomDropFile = 0;
+int g_atomDropFile    = 0;
+int g_atomDisplayMode = 0;
 
 
-/**
- * Helper macro for SDL error return from predicate.
- */
+/** Helper macro for SDL error return from predicate. */
 #define RETURN_SDL_FAIL(F)					\
   fprintf(stderr, "%s failed -> %s\n", #F, SDL_GetError());	\
   return PL_FALSE;
@@ -75,11 +74,10 @@ PlBool gp_SDL_Init(PlLong flags)
   g_atomTextInput = Pl_Create_Atom("text_input");
   g_atomTextEditing = Pl_Create_Atom("text_editing");
   g_atomDropFile = Pl_Create_Atom("dropfile");
+  g_atomDisplayMode = Pl_Create_Atom("display_mode");
 
-  if (flags > 0)
-  {
-    if (0 == SDL_Init(flags))
-    {
+  if (flags > 0) {
+    if (0 == SDL_Init(flags)) {
       return PL_TRUE;
     }
     RETURN_SDL_FAIL(SDL_Init);
@@ -94,10 +92,8 @@ PlBool gp_SDL_Init(PlLong flags)
  * @return PL_TRUE
  *
  */
-PlBool gp_SDL_Quit()
-{
+PlBool gp_SDL_Quit() {
   SDL_Quit();
-
   return PL_TRUE;
 }
 
@@ -125,8 +121,7 @@ PlBool gp_SDL_CreateWindow(char*  title,
 {
   SDL_Window* wnd = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
 
-  if (wnd)
-  {
+  if (wnd) {
     *handle = (PlLong)wnd;
 
 #ifdef __DEBUG__
@@ -134,7 +129,6 @@ PlBool gp_SDL_CreateWindow(char*  title,
 #endif
     return PL_TRUE;
   }
-
   RETURN_SDL_FAIL(SDL_CreateWindow);
 }
 
@@ -152,7 +146,6 @@ PlBool gp_SDL_CreateWindow(char*  title,
 PlBool gp_SDL_DestroyWindow(PlLong handle)
 {
   SDL_DestroyWindow((SDL_Window*)handle);
-
   return PL_TRUE;
 }
 
@@ -175,7 +168,6 @@ PlBool gp_SDL_SetWindowTitle(PlLong wnd, char* title)
     fprintf(stderr, "gp_SDL_SetWindowTitle: %p => %s\n",
 	    (SDL_Window*)wnd, title);
 #endif
-
     return PL_TRUE;
 }
 
@@ -201,7 +193,6 @@ PlBool gp_SDL_CreateRenderer(PlLong *handle, PlLong index, PlLong flags, PlLong 
     *r = (PlLong)renderer;
     return PL_TRUE;
   }
-
   RETURN_SDL_FAIL(SDL_CreateRenderer);
 }
 
@@ -225,14 +216,11 @@ PlBool gp_SDL_CreateWindowAndRenderer(
   SDL_Window   *w;
   SDL_Renderer *r;
 
-  if (SDL_CreateWindowAndRenderer(width, height, flags, &w, &r))
-  {
+  if (SDL_CreateWindowAndRenderer(width, height, flags, &w, &r)) {
     *wnd = (PlLong)wnd;
     *renderer = (PlLong)renderer;
-
     return PL_TRUE;
   }
-
   RETURN_SDL_FAIL(SDL_CreateWindowAndRenderer);
 }
 
@@ -251,7 +239,6 @@ PlBool gp_SDL_CreateWindowAndRenderer(
 PlBool gp_SDL_DestroyRenderer(PlLong handle)
 {
   SDL_DestroyRenderer((SDL_Renderer*)handle);
-
   return PL_TRUE;
 }
 
@@ -259,7 +246,6 @@ PlBool gp_SDL_DestroyRenderer(PlLong handle)
 PlBool gp_SDL_SetRenderDrawColor(PlLong rndr, PlLong r, PlLong g, PlLong b, PlLong a)
 {
   SDL_SetRenderDrawColor((SDL_Renderer*)rndr, r, g, b, a);
-
   return PL_TRUE;
 }
 
@@ -267,7 +253,6 @@ PlBool gp_SDL_SetRenderDrawColor(PlLong rndr, PlLong r, PlLong g, PlLong b, PlLo
 PlBool gp_SDL_RenderClear(PlLong rndr)
 {
   SDL_RenderClear((SDL_Renderer*)rndr);
-
   return PL_TRUE;
 }
 
@@ -275,7 +260,6 @@ PlBool gp_SDL_RenderClear(PlLong rndr)
 PlBool gp_SDL_RenderPresent(PlLong rndr)
 {
   SDL_RenderPresent((SDL_Renderer*)rndr);
-
   return PL_TRUE;
 }
 
@@ -283,7 +267,6 @@ PlBool gp_SDL_RenderPresent(PlLong rndr)
 PlBool gp_SDL_RenderDrawPoint(PlLong rndr, PlLong x, PlLong y)
 {
   SDL_RenderDrawPoint((SDL_Renderer*)rndr, (int)x, (int)y);
-
   return PL_TRUE;
 }
 
@@ -294,7 +277,6 @@ PlBool gp_SDL_RenderDrawLine(
     PlLong x2, PlLong y2)
 {
   SDL_RenderDrawLine((SDL_Renderer*)rndr, (int)x1, (int)y1, (int)x2, (int)y2);
-
   return PL_TRUE;
 }
 
@@ -311,7 +293,6 @@ PlBool gp_SDL_RenderDrawRect(
   rect.h = h;
 
   SDL_RenderDrawRect((SDL_Renderer*)rndr, &rect);
-
   return PL_TRUE;
 }
 
@@ -328,7 +309,6 @@ PlBool gp_SDL_RenderFillRect(
   rect.h = h;
 
   SDL_RenderFillRect((SDL_Renderer*)rndr, &rect);
-
   return PL_TRUE;
 }
 
@@ -345,12 +325,10 @@ PlBool gp_SDL_CreateTexture_C(
       access,
       w, h);
 
-  if (pTexture)
-  {
+  if (pTexture) {
     *texture = (PlLong)pTexture;
     return PL_TRUE;
   }
-
   RETURN_SDL_FAIL(SDL_CreateTexture);
 }
 
@@ -358,7 +336,6 @@ PlBool gp_SDL_CreateTexture_C(
 PlBool gp_SDL_DestroyTexture(PlLong texture)
 {
   SDL_DestroyTexture((SDL_Texture*)texture);
-
   return PL_TRUE;
 }
 
@@ -413,7 +390,6 @@ PlBool gp_SDL_PollEvent(PlTerm *event)
 PlBool gp_SDL_GetTicks(PlLong *ticks)
 {
   *ticks = (PlLong)SDL_GetTicks();
-
   return PL_TRUE;
 }
 
@@ -430,7 +406,6 @@ PlBool gp_SDL_GetTicks(PlLong *ticks)
 PlBool gp_SDL_Delay(PlLong delay_in_milliseconds)
 {
   SDL_Delay(delay_in_milliseconds);
-
   return PL_TRUE;
 }
 
@@ -447,7 +422,6 @@ PlBool gp_SDL_Delay(PlLong delay_in_milliseconds)
 PlBool gp_SDL_ShowSimpleMessageBox_C(PlLong flags, char* title, char* message)
 {
   SDL_ShowSimpleMessageBox(flags, title, message, NULL);
-
   return PL_TRUE;
 }
 
@@ -455,7 +429,6 @@ PlBool gp_SDL_ShowSimpleMessageBox_C(PlLong flags, char* title, char* message)
 PlBool gp_SDL_StartTextInput()
 {
   SDL_StartTextInput();
-
   return PL_TRUE;
 }
 
@@ -463,7 +436,6 @@ PlBool gp_SDL_StartTextInput()
 PlBool gp_SDL_StopTextInput()
 {
   SDL_StopTextInput();
-
   return PL_TRUE;
 }
 
@@ -477,7 +449,6 @@ PlBool gp_SDL_SetTextInputRect(PlLong x, PlLong y, PlLong w, PlLong h)
   rect.h = h;
 
   SDL_SetTextInputRect(&rect);
-
   return PL_TRUE;
 }
 
@@ -499,10 +470,7 @@ PlBool gp_SDL_SetTextInputRect(PlLong x, PlLong y, PlLong w, PlLong h)
 //--------------------------------------------------------------------
 // quit( <timestamp> ).
 //--------------------------------------------------------------------
-EVWRAPPER(evQuit)
-{
-  sprintf(t,"quit(%u)", e->quit.timestamp);
-}
+EVWRAPPER(evQuit) { sprintf(t,"quit(%u)", e->quit.timestamp); }
 
 
 //--------------------------------------------------------------------
@@ -514,8 +482,7 @@ EVWRAPPER(evQuit)
 //                  <sym>
 //                  <mod> ).
 //--------------------------------------------------------------------
-EVWRAPPER(evKbd)
-{
+EVWRAPPER(evKbd) {
   sprintf(t,
 	  "%s(%u,%u,%s,%s,%u,%u,%u)",
 	  e->type == SDL_KEYDOWN ? "keydown" : "keyup",
@@ -525,8 +492,7 @@ EVWRAPPER(evKbd)
 	  e->key.repeat ? "repeat" : "first",
 	  e->key.keysym.scancode,
 	  e->key.keysym.sym,
-	  e->key.keysym.mod);
-}
+	  e->key.keysym.mod); }
 
 
 //--------------------------------------------------------------------
@@ -737,7 +703,6 @@ PlBool gp_SDL_RenderDrawCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong rad
       decisionOver2 += (y<<1)+1;
     }
   }
-
   return PL_TRUE;
 }
 
@@ -805,7 +770,6 @@ PlBool gp_SDL_LoadBMP(char* filename, PlLong *surface)
 PlBool gp_SDL_FreeSurface(PlLong surface)
 {
   SDL_FreeSurface((SDL_Surface*)surface);
-
   return PL_TRUE;
 }
 
@@ -881,8 +845,8 @@ PlBool gp_SDL_GetNumVideoDisplays(PlLong *displayCount)
 
   if (count >= 1) {
     *displayCount = (PlLong)count;
+    return PL_TRUE;
   }
-
   RETURN_SDL_FAIL(SDL_GetNumVideoDisplays);
 }
 
@@ -892,16 +856,65 @@ PlBool gp_SDL_GetDisplayBounds(PlLong display, PlLong *x, PlLong *y, PlLong *w, 
   SDL_Rect rect;
 
   if (0 == SDL_GetDisplayBounds((int)display, &rect)) {
-
     *x = (PlLong)rect.x;
     *y = (PlLong)rect.y;
     *w = (PlLong)rect.w;
     *h = (PlLong)rect.h;
-
     return PL_TRUE;
   }
-
   RETURN_SDL_FAIL(SDL_GetDisplayBounds);
+}
+
+
+// Output term is:
+//
+//    display_mode( <format>, <width>, <height>, <refresh-rate> ).
+//
+void displayModeToTerm(SDL_DisplayMode *mode, PlTerm *term)
+{
+    PlTerm args[] = {
+      Pl_Mk_Integer((PlLong)mode->format),
+      Pl_Mk_Integer((PlLong)mode->w),
+      Pl_Mk_Integer((PlLong)mode->h),
+      Pl_Mk_Integer((PlLong)mode->refresh_rate)
+    };
+    *term = Pl_Mk_Compound(g_atomDisplayMode, 4, &args[0]);
+}
+
+
+PlBool gp_SDL_GetCurrentDisplayMode(int index, PlTerm *mode)
+{
+  SDL_DisplayMode displayMode;
+
+  if (0 == SDL_GetCurrentDisplayMode((int)index, &displayMode)) {
+    displayModeToTerm(&displayMode, mode);
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_GetCurrentDisplayMode);
+}
+
+
+PlBool gp_SDL_GetDesktopDisplayMode(PlLong index, PlTerm *mode)
+{
+  SDL_DisplayMode displayMode;
+
+  if (0 == SDL_GetDesktopDisplayMode((int)index, &displayMode)) {
+    displayModeToTerm(&displayMode, mode);
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_GetDesktopDisplayMode);
+}
+
+
+PlBool gp_SDL_GetDisplayMode(PlLong index, PlLong modeIndex, PlTerm *mode)
+{
+  SDL_DisplayMode displayMode;
+
+  if (0 == SDL_GetDisplayMode((int)index, (int)modeIndex, &displayMode)) {
+    displayModeToTerm(&displayMode, mode);
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_GetDisplayMode);
 }
 
 
@@ -919,7 +932,6 @@ PlBool gp_SDL_SetWindowFullScreen(PlLong window, PlLong flags)
   if (0 == SDL_SetWindowFullscreen((SDL_Window*)window,(Uint32)flags)) {
     return PL_TRUE;
   }
-
   RETURN_SDL_FAIL(SDL_SetWindowFullScreen);
 }
 
@@ -928,7 +940,6 @@ PlBool gp_SDL_GetWindowFlags(PlLong window, PlLong * flags)
 {
   Uint32 wndFlags = SDL_GetWindowFlags((SDL_Window*)window);
   *flags = (PlLong)wndFlags;
-
   return PL_TRUE;
 }
 
@@ -945,14 +956,12 @@ PlBool gp_SDL_GetWindowFlags(PlLong window, PlLong * flags)
 PlBool gp_SDL_GetNumAudioDevices(PlBool isCapture, PlLong *count)
 {
   *count = (PlLong)SDL_GetNumAudioDevices((int)isCapture);
-
   return PL_TRUE;
 }
 
 PlBool gp_SDL_GetNumAudioDrivers(PlLong *count)
 {
   *count = (PlLong)SDL_GetNumAudioDrivers();
-
   return PL_TRUE;
 }
 
@@ -969,7 +978,6 @@ PlBool gp_SDL_GetNumAudioDrivers(PlLong *count)
 PlBool gp_SDL_GetPlatform(PlTerm *output)
 {
   *output = Pl_Mk_Atom(Pl_Create_Atom(SDL_GetPlatform()));
-
   return  PL_TRUE;
 }
 

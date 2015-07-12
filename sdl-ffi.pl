@@ -98,7 +98,8 @@
 
 %% Window and Display Functions
 
-:- foreign(sdl_GetNumVideoDisplays, [fct_name(gp_SDL_GetNumVideoDisplays)]).
+:- foreign(sdl_GetNumVideoDisplays(-positive),
+	   [fct_name(gp_SDL_GetNumVideoDisplays)]).
 
 :- foreign(sdl_GetDisplayBounds(+positive, -positive, -positive, -positive, -positive),
 	   [fct_name(gp_SDL_GetDisplayBounds)]).
@@ -108,6 +109,15 @@
 
 :- foreign(sdl_GetWindowFlags(+positive, -positive),
 	   [fct_name(gp_SDL_GetWindowFlags)]).
+
+:- foreign(sdl_GetCurrentDisplayMode(+positive, -term),
+	   [fct_name(gp_SDL_GetCurrentDisplayMode)]).
+
+:- foreign(sdl_GetDesktopDisplayMode(+positive, -term),
+	   [fct_name(gp_SDL_GetDesktopDisplayMode)]).
+
+:- foreign(sdl_GetDisplayMode(+positive, +positive, -term),
+	   [fct_name(gp_SDL_GetDisplayMode)]).
 
 
 %% Audio functions
