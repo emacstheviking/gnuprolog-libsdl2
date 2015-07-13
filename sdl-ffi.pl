@@ -4,6 +4,8 @@
 %%
 %%====================================================================
 
+%%% REVIEW: USE OD INTEGER / POSITIVE!
+
 :- foreign(sdl_Init_C(+positive), [fct_name(gp_SDL_Init)]).
 :- foreign(sdl_Quit,              [fct_name(gp_SDL_Quit)]).
 
@@ -126,6 +128,12 @@
 :- foreign(sdl_GetNumAudioDrivers(-positive),             [fct_name(gp_SDL_GetNumAudioDevices)]).
 
 
+%% Thread functions
+
+:- foreign(sdl_CreateThread(+term, +codes, -positive),
+	   [fct_name(gp_SDL_CreateThread)]).
+
+
 %% ADDITIONS to "SDL" for your convenience!
 
 :- foreign(sdl_RenderDrawCircle(+positive, +positive, +positive, +positive),
@@ -133,3 +141,17 @@
 
 :- foreign(sdl_RenderFillCircle(+positive, +positive, +positive, +positive),
 	  [fct_name(gp_SDL_RenderFillCircle)]).
+
+
+%%====================================================================
+%%
+%%                    SDL_ttf  -  FFI DEFINITIONS
+%%
+%%====================================================================
+:- foreign(ttf_Init, [fct_name(gp_TTF_Init)]).
+:- foreign(ttf_Quit, [fct_name(gp_TTF_Quit)]).
+:- foreign(ttf_OpenFont(+codes, +positive, -positive), [fct_name(gp_TTF_OpenFont)]).
+:- foreign(ttf_CloseFont(+positive), [fct_name(gp_TTF_CloseFont)]).
+
+:- foreign(ttf_RenderUTF8_Solid(+positive, +positive, +positive, +positive, +codes),
+	   [fct_name(gp_TTF_RenderUTF8_Solid)]).

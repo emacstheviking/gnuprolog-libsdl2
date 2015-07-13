@@ -2,7 +2,7 @@ check_sdl :-
 	sdl_Init([video]),
 	WndW=640,
 	WndH=480,
-	sdl_CreateWindow("fred", 0, 0, WndW, WndH, [], W),
+	sdl_CreateWindow("f! yeah!!", centered, centered, WndW, WndH, [], W),
 	evloop,
 	sdl_DestroyWindow(W),
 	sdl_Quit.
@@ -147,3 +147,32 @@ handle_event(keyup(_,_,released,_,_,27,_)) :-
 	format("ESC pressed~n", []), !, fail.
 
 handle_event(_).
+
+
+
+tt :-
+	sdl_CreateThread(doit(42), "test-thread", X),
+	write(X).
+
+doit(N) :-
+	write("in the thread"),
+	write(N).
+
+
+fonttest :-
+	sdl_Init([video]),
+	ttf_Init,
+	sdl_CreateWindow("fred", 0, 0, 640, 480, [], W),
+	sdl_CreateRenderer(W, -1, [accelerated, presentvsync], R),
+	sdl_SetRenderDrawColor(R, 0, 0, 255, 255),
+	sdl_RenderClear(R),
+	draw_a_circle(R, 640, 480),
+	draw_a_circle(R, 640, 480),
+	sdl_SetRenderDrawColor(R, 255, 255, 0, 255),	
+	ttf_OpenFont("/Library/Fonts/OsakaMono.ttf",80, F),
+	write(F),
+	ttf_RenderUTF8_Solid(R, F, 100, 30, "Hello Sri!"),
+	sdl_RenderPresent(R),
+	sdl_Delay(10000),
+	ttf_Quit,
+	sdl_Quit.

@@ -4,7 +4,7 @@
 
 #include <gprolog.h>
 #include <SDL2/SDL.h>
-//#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "static_data.h"
 
@@ -33,6 +33,14 @@ int g_atomDisplayMode = 0;
   fprintf(stderr, "%s failed -> %s\n", #F, SDL_GetError());	\
   return PL_FALSE;
 
+#define SHOW_SDL_FAIL(F) fprintf(stderr, "%s failed -> %s\n", #F, SDL_GetError());
+
+/** Helper macro for TTF error return from predicate. */
+#define RETURN_TTF_FAIL(F)					\
+  fprintf(stderr, "%s failed -> %s\n", #F, TTF_GetError());	\
+  return PL_FALSE;
+
+#define SHOW_TTF_FAIL(F) fprintf(stderr, "%s failed -> %s\n", #F, TTF_GetError());
 
 
 #define EV(F) F(&ev, &szTerm[0])
@@ -123,10 +131,6 @@ PlBool gp_SDL_CreateWindow(char*  title,
 
   if (wnd) {
     *handle = (PlLong)wnd;
-
-#ifdef __DEBUG__
-    fprintf(stderr, "gp_SDL_CreateWindow: %p\n", wnd);
-#endif
     return PL_TRUE;
   }
   RETURN_SDL_FAIL(SDL_CreateWindow);
@@ -163,11 +167,6 @@ PlBool gp_SDL_DestroyWindow(PlLong handle)
 PlBool gp_SDL_SetWindowTitle(PlLong wnd, char* title)
 {
     SDL_SetWindowTitle((SDL_Window*)wnd, title);
-
-#ifdef __DEBUG__
-    fprintf(stderr, "gp_SDL_SetWindowTitle: %p => %s\n",
-	    (SDL_Window*)wnd, title);
-#endif
     return PL_TRUE;
 }
 
@@ -981,3 +980,139 @@ PlBool gp_SDL_GetPlatform(PlTerm *output)
   return  PL_TRUE;
 }
 
+
+//--------------------------------------------------------------------
+//
+//
+//
+//                    Threading functions
+//
+//
+//
+//--------------------------------------------------------------------
+
+// if I made the data the PlTerm that was the callback....
+
+int gp_ThreadHandler(void* data)
+{
+  int functor, arity;
+  int result;
+  PlTerm* pTerm = (PlTerm*)data;
+  PlTerm* arg;
+
+  //  arg = Pl_Rd_Callable_Check(*pTerm, &functor, &arity);
+  //Pl_Query_Begin(PL_FALSE);
+
+  //result = Pl_Query_Call(functor, arity, arg);
+
+  //Pl_Query_End(PL_CUT); // release memory?!?!
+
+  Pl_Write(*pTerm);
+  
+  free(data);
+  fprintf(stdout, "THREAD DEATH\n");
+  return result;
+}
+
+
+PlBool gp_SDL_CreateThread(PlTerm  callback,char*   threadName,PlTerm* thread)
+{
+  PlTerm* pTerm = calloc(1, sizeof(PlTerm));
+
+  if (pTerm)
+  {
+    Pl_Copy_Term(pTerm, &callback);
+    
+    SDL_Thread *t = SDL_CreateThread(gp_ThreadHandler, threadName, (void*)pTerm);
+
+    if (t) {
+      SDL_DetachThread(t);
+      *thread = (PlLong)t;
+      return PL_TRUE;
+    }
+    RETURN_SDL_FAIL(SDL_CreateThread);
+  }
+  return PL_FALSE;
+}
+
+
+//--------------------------------------------------------------------
+//
+//
+//
+//                    Truetype (TFF) Functions
+//
+//                            "SDL_ttf"
+//
+// NB: --with-sdl-prefix !
+//--------------------------------------------------------------------
+PlBool gp_TTF_Init()
+{
+  if (0 == TTF_Init()) {
+    return PL_TRUE;
+  }
+  RETURN_TTF_FAIL(TTF_Init);
+}
+
+
+PlBool gp_TTF_Quit()
+{
+  TTF_Quit();
+  return PL_TRUE;
+}
+
+PlBool gp_TTF_OpenFont(char* fontName, PlLong size, PlTerm *font)
+{
+  TTF_Font *pFont = TTF_OpenFont(fontName, (int)size);
+
+  if (!pFont) {
+    RETURN_TTF_FAIL(TTF_OpenFont);
+  }
+
+  *font = (PlLong)pFont;
+  return PL_TRUE;
+}
+
+PlBool gp_TTF_CloseFont(PlLong font)
+{
+  TTF_CloseFont((TTF_Font*)font);
+  return PL_TRUE;
+}
+
+PlBool gp_TTF_RenderUTF8_Solid(
+    PlTerm rndr, PlTerm font,
+    PlLong x, PlLong y,
+    char* text)
+{
+  // TODO:: ADD atom param solid/shaded/blended
+  SDL_Renderer* r  = (SDL_Renderer*)rndr;
+  SDL_Color color  = {255, 255, 255, 255};
+  SDL_Color black  = {0, 0, 0, 255};
+  SDL_Rect dstRect = {(int)x, (int)y};
+  
+  SDL_GetRenderDrawColor(r, &color.r, &color.g, &color.b, &color.a);
+  //SDL_Surface *pText = TTF_RenderUTF8_Solid((TTF_Font*)font, text, color);
+  //SDL_Surface *pText = TTF_RenderUTF8_Shaded((TTF_Font*)font, text, color, black);
+  SDL_Surface *pText = TTF_RenderUTF8_Blended((TTF_Font*)font, text, color);
+
+  if (pText)
+  {
+    SDL_Texture *tex = SDL_CreateTextureFromSurface((SDL_Renderer*)rndr, pText);
+
+    if (tex) {
+      SDL_QueryTexture(tex, NULL, NULL, &dstRect.w, &dstRect.h);
+
+      if(SDL_RenderCopy((SDL_Renderer*)rndr, tex, NULL, &dstRect)) {
+	SHOW_SDL_FAIL(TTF_RenderUTF8_Solid);
+      }
+    }
+    else {
+      SHOW_SDL_FAIL(SDL_CreateTextureFromSurface);
+    }
+    SDL_FreeSurface(pText);
+  }
+  else {
+    SHOW_TTF_FAIL(TTF_RenderUTF8_Solid);
+  }
+  return PL_TRUE;
+}

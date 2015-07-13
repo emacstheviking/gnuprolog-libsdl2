@@ -50,13 +50,15 @@ sdl_Init(Flags) :-
 sdl_CreateWindow(Title, X, Y, Width, Height, Flags, Wnd) :-
 	var(Wnd),
 	list(Title),
-	atomic(X), \+ float(X),
-	atomic(Y), \+ float(Y),
-	%%integer(W),
-	%%integer(H),  centered or undefined are allowed =>!
+	atomic(X),
+	\+ float(X),
+	atomic(Y),
+	\+ float(Y),
+	sdl_make_flags([X], 'SDL_CreateWindow', XPos),
+	sdl_make_flags([Y], 'SDL_CreateWindow', YPos),
 	list(Flags),
 	sdl_make_flags(Flags, 'SDL_CreateWindow', Value),
-	sdl_CreateWindow_C(Title, X, Y, Width, Height, Value, Wnd).
+	sdl_CreateWindow_C(Title, XPos, YPos, Width, Height, Value, Wnd).
 
 
 sdl_SetWindowFullScreen(Wnd, Flags) :-
