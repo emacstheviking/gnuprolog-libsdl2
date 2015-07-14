@@ -12,7 +12,7 @@ sdl:
 	gplc \
 	-C -I./SDL2/gp/include \
 	-L -L./SDL2/gp/lib \
-	-L -lSDL2 -L -lSDL2_ttf -L -lSDL2_image -o sdltest \
+	-L -lSDL2 -L -lSDL2_ttf -L -lSDL2_image -L -lSDL2_mixer -o sdltest \
 	sdl-ffi.pl sdl.pl sdl_lib.c
 
 clean:

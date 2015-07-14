@@ -1,3 +1,10 @@
+mixertest :-
+	mix_Linked_Version(Maj, Min, Patch),
+	format("SDL_Mixer: ~w.~w.~w~n", [Maj, Min, Patch]),
+	sdl_Init([audio]),
+	mix_OpenAudio(22050, [], 2, 4096),
+	mix_CloseAudio.
+
 check_sdl :-
 	sdl_Init([video]),
 	WndW=640,
@@ -120,7 +127,6 @@ evtest :-
 evloop :-
 	sdl_PollEvent(E),
 	handle_event(E),
-	%%sdl_Delay(25),
 	!,
 	evloop.
 evloop. %% keep going on poll fail i.e. no event!
@@ -129,7 +135,6 @@ evloop(Callback) :-
 	call(Callback),
 	sdl_PollEvent(E),
 	handle_event(E),
-	sdl_Delay(1),
 	!,
 	evloop(Callback).
 
@@ -162,17 +167,20 @@ doit(N) :-
 fonttest :-
 	sdl_Init([video]),
 	ttf_Init,
-	sdl_CreateWindow("fred", 0, 0, 640, 480, [], W),
+	sdl_CreateWindow("Font Tests", cente, 0, 640, 480, [], W),
 	sdl_CreateRenderer(W, -1, [accelerated, presentvsync], R),
-	sdl_SetRenderDrawColor(R, 0, 0, 255, 255),
+	%% clear to black
+	sdl_SetRenderDrawColor(R, 0, 0, 0, 255),
 	sdl_RenderClear(R),
-	draw_a_circle(R, 640, 480),
-	draw_a_circle(R, 640, 480),
-	sdl_SetRenderDrawColor(R, 255, 255, 0, 255),	
 	ttf_OpenFont("/Library/Fonts/OsakaMono.ttf",80, F),
-	write(F),
-	ttf_RenderUTF8_Solid(R, F, 100, 30, "Hello Sri!"),
+	ttf_OpenFont("/Library/Fonts/BigCaslon.ttf",40, F2),
+	ttf_SizeUTF8(F, "Osaka Mono", RW, RH),
+	format("Font texture: ~w x ~w pixels~n", [RW, RH]),
+	sdl_SetRenderDrawColor(R, 255, 128, 128, 255),	
+	ttf_RenderUTF8_Solid(R, F, 100, 30, "Osaka Mono"),
+	sdl_SetRenderDrawColor(R, 0, 128, 128, 255),	
+	ttf_RenderUTF8_Solid(R, F2, 100, RH, "Some other font"),
 	sdl_RenderPresent(R),
-	sdl_Delay(10000),
+	evloop,
 	ttf_Quit,
 	sdl_Quit.

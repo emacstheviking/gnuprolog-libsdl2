@@ -5,6 +5,7 @@
 #include <gprolog.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "static_data.h"
 
@@ -28,24 +29,29 @@ int g_atomDropFile    = 0;
 int g_atomDisplayMode = 0;
 
 
-/** Helper macro for SDL error return from predicate. */
 #define RETURN_SDL_FAIL(F)					\
   fprintf(stderr, "%s failed -> %s\n", #F, SDL_GetError());	\
   return PL_FALSE;
 
 #define SHOW_SDL_FAIL(F) fprintf(stderr, "%s failed -> %s\n", #F, SDL_GetError());
 
-/** Helper macro for TTF error return from predicate. */
 #define RETURN_TTF_FAIL(F)					\
   fprintf(stderr, "%s failed -> %s\n", #F, TTF_GetError());	\
   return PL_FALSE;
 
 #define SHOW_TTF_FAIL(F) fprintf(stderr, "%s failed -> %s\n", #F, TTF_GetError());
 
+#define RETURN_MIX_FAIL(F)					\
+  fprintf(stderr, "%s failed -> %s\n", #F, Mix_GetError());	\
+  return PL_FALSE;
+
+#define SHOW_MIX_FAIL(F) fprintf(stderr, "%s failed -> %s\n", #F, Mix_GetError());
+
 
 #define EV(F) F(&ev, &szTerm[0])
 #define EVB(F) F(&ev, &szTerm[0]); break
 #define EVWRAPPER(F) void F(SDL_Event *e, char* t)
+
 
 // These create response with Pl_Read_From_String
 EVWRAPPER(evKbd);
@@ -66,6 +72,10 @@ EVWRAPPER_TERM(evDropEvent);
 
 // Maps event codes into strings for atom conversion
 const char* evWindowType(int);
+
+// render a font texture into a renderer
+void renderFont(SDL_Renderer* r, SDL_Surface* pText, int x, int y);
+
 
 
 
@@ -1008,7 +1018,7 @@ int gp_ThreadHandler(void* data)
   //Pl_Query_End(PL_CUT); // release memory?!?!
 
   Pl_Write(*pTerm);
-  
+
   free(data);
   fprintf(stdout, "THREAD DEATH\n");
   return result;
@@ -1022,7 +1032,7 @@ PlBool gp_SDL_CreateThread(PlTerm  callback,char*   threadName,PlTerm* thread)
   if (pTerm)
   {
     Pl_Copy_Term(pTerm, &callback);
-    
+
     SDL_Thread *t = SDL_CreateThread(gp_ThreadHandler, threadName, (void*)pTerm);
 
     if (t) {
@@ -1061,6 +1071,7 @@ PlBool gp_TTF_Quit()
   return PL_TRUE;
 }
 
+
 PlBool gp_TTF_OpenFont(char* fontName, PlLong size, PlTerm *font)
 {
   TTF_Font *pFont = TTF_OpenFont(fontName, (int)size);
@@ -1073,36 +1084,99 @@ PlBool gp_TTF_OpenFont(char* fontName, PlLong size, PlTerm *font)
   return PL_TRUE;
 }
 
+
 PlBool gp_TTF_CloseFont(PlLong font)
 {
   TTF_CloseFont((TTF_Font*)font);
   return PL_TRUE;
 }
 
-PlBool gp_TTF_RenderUTF8_Solid(
-    PlTerm rndr, PlTerm font,
-    PlLong x, PlLong y,
-    char* text)
+
+PlBool gp_TTF_RenderUTF8_Solid(PlTerm rndr, PlTerm font, PlLong x, PlLong y, char* text)
 {
-  // TODO:: ADD atom param solid/shaded/blended
-  SDL_Renderer* r  = (SDL_Renderer*)rndr;
+  SDL_Color color = {255, 255, 255, 255};
+
+  SDL_GetRenderDrawColor(
+      (SDL_Renderer*)rndr,
+      &color.r, &color.g, &color.b, &color.a);
+
+  renderFont((SDL_Renderer*)rndr,
+	     TTF_RenderUTF8_Solid((TTF_Font*)font, text, color),
+	     (int)x, (int)y);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_TTF_RenderUTF8_Blended(PlTerm rndr, PlTerm font, PlLong x, PlLong y, char* text)
+{
+  SDL_Color color = {255, 255, 255, 255};
+
+  SDL_GetRenderDrawColor(
+      (SDL_Renderer*)rndr,
+      &color.r, &color.g, &color.b, &color.a);
+
+  renderFont((SDL_Renderer*)rndr,
+	     TTF_RenderUTF8_Blended((TTF_Font*)font, text, color),
+	     (int)x, (int)y);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_TTF_RenderUTF8_Shaded(PlTerm rndr, PlTerm font, PlLong x, PlLong y, char* text)
+{
   SDL_Color color  = {255, 255, 255, 255};
   SDL_Color black  = {0, 0, 0, 255};
-  SDL_Rect dstRect = {(int)x, (int)y};
-  
-  SDL_GetRenderDrawColor(r, &color.r, &color.g, &color.b, &color.a);
-  //SDL_Surface *pText = TTF_RenderUTF8_Solid((TTF_Font*)font, text, color);
-  //SDL_Surface *pText = TTF_RenderUTF8_Shaded((TTF_Font*)font, text, color, black);
-  SDL_Surface *pText = TTF_RenderUTF8_Blended((TTF_Font*)font, text, color);
 
-  if (pText)
-  {
-    SDL_Texture *tex = SDL_CreateTextureFromSurface((SDL_Renderer*)rndr, pText);
+  SDL_GetRenderDrawColor(
+      (SDL_Renderer*)rndr,
+      &color.r, &color.g, &color.b, &color.a);
 
+  renderFont((SDL_Renderer*)rndr,
+	     TTF_RenderUTF8_Shaded((TTF_Font*)font, text, color, black),
+	     (int)x, (int)y);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_TTF_SizeUTF8(PlTerm font, char* text, PlLong *width, PlLong *height)
+{
+  int w, h;
+
+  *width  = 0;
+  *height = 0;
+
+  if (TTF_SizeUTF8((TTF_Font*)font, text, &w, &h)) {
+    RETURN_TTF_FAIL(TTF_SizeUTF8);
+  }
+
+  *width  = (PlLong)w;
+  *height = (PlLong)h;
+
+  return PL_TRUE;
+}
+
+
+/**
+ * Renders a texture containing a rendered font incarnation to the
+ * specified (x,y) location in the output.
+ *
+ * @param SDL_Renderer* r contains the destination renderer
+ * @param SDK_Surface*  s contains the rendered text source data
+ * @param int x         the output x-coordinate in "r"
+ * @param int y         the output y-coordinate in "r"
+ */
+void renderFont(SDL_Renderer* r, SDL_Surface* pText, int x, int y)
+{
+  SDL_Rect  dstRect = {(int)x, (int)y};
+
+  if (pText) {
+    SDL_Texture *tex = SDL_CreateTextureFromSurface(r, pText);
     if (tex) {
       SDL_QueryTexture(tex, NULL, NULL, &dstRect.w, &dstRect.h);
-
-      if(SDL_RenderCopy((SDL_Renderer*)rndr, tex, NULL, &dstRect)) {
+      if(SDL_RenderCopy(r, tex, NULL, &dstRect)) {
 	SHOW_SDL_FAIL(TTF_RenderUTF8_Solid);
       }
     }
@@ -1114,5 +1188,55 @@ PlBool gp_TTF_RenderUTF8_Solid(
   else {
     SHOW_TTF_FAIL(TTF_RenderUTF8_Solid);
   }
+}
+
+
+//--------------------------------------------------------------------
+//
+//
+//
+//                    Mixer functions
+//
+//                      "SDL_mixer"
+//
+//--------------------------------------------------------------------
+PlBool gp_Mix_Linked_Version(PlLong *major, PlLong *minor, PlLong *patch)
+{
+  SDL_version compile_version;
+  const SDL_version *link_version = Mix_Linked_Version();
+  SDL_MIXER_VERSION(&compile_version);  
+
+  *major = (PlLong)compile_version.major;
+  *minor = (PlLong)compile_version.minor;
+  *patch = (PlLong)compile_version.patch;
+  
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_Init(PlLong flags)
+{
+  int result = Mix_Init(flags);
+
+  if (result) {
+    RETURN_MIX_FAIL(Mix_Init);
+  }
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_OpenAudio(
+    PlLong frequency, PlLong format,
+    PlLong channels, PlLong chunks)
+{
+  if (Mix_OpenAudio((int)frequency, (int)format, (int)channels, (int)chunks)) {
+    RETURN_MIX_FAIL(Mix_OpenAudio);
+  }
+  return PL_TRUE;
+}
+
+PlBool gp_Mix_CloseAudio()
+{
+  Mix_CloseAudio();
   return PL_TRUE;
 }

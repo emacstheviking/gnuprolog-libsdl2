@@ -26,20 +26,17 @@
 %%
 %%--------------------------------------------------------------------
 
-
-
-
-%%--------------------------------------------------------------------
-%%
-%% SDL_Init
-%%
-%%--------------------------------------------------------------------
 sdl_Init :-
 	sdl_Init([everything]).
 
 sdl_Init(Flags) :-
 	sdl_make_flags(Flags, 'SDL_Init', Value),
 	sdl_Init_C(Value).
+	
+
+mix_OpenAudio(Freq, Flags, Channels, BufSize) :-
+	sdl_make_flags(Flags, 'Mix_OpenAudio', Value),
+	mix_OpenAudio_C(Freq, Value, Channels, BufSize).
 
 
 %%--------------------------------------------------------------------
@@ -218,4 +215,15 @@ sdl_constants('SDL_GetWindowFlags',
 	      , mouse_focus        - 0x00000400
 	      , foreign            - 0x00000800
 	      , allow_highdpi      - 0x00002000
+	      ]).
+
+sdl_constants('Mix_OpenAudio',
+	      [ audio_u8           - 0x0008
+	      , audio_s8           - 0x8008
+	      , audio_u16lsb       - 0x0010
+	      , audio_s16lsb       - 0x8010
+	      , audio_u16msb       - 0x1010
+	      , audio_s16msb       - 0x9010
+	      , audio_u16          - 0x0010
+	      , audio_s16          - 0x8010
 	      ]).

@@ -145,7 +145,7 @@
 
 %%====================================================================
 %%
-%%                    SDL_ttf  -  FFI DEFINITIONS
+%%                    SDL_ttf    (Truetype Fonts)
 %%
 %%====================================================================
 :- foreign(ttf_Init, [fct_name(gp_TTF_Init)]).
@@ -153,5 +153,30 @@
 :- foreign(ttf_OpenFont(+codes, +positive, -positive), [fct_name(gp_TTF_OpenFont)]).
 :- foreign(ttf_CloseFont(+positive), [fct_name(gp_TTF_CloseFont)]).
 
+%% Only going to support UTF-8 encoded text...
+
 :- foreign(ttf_RenderUTF8_Solid(+positive, +positive, +positive, +positive, +codes),
 	   [fct_name(gp_TTF_RenderUTF8_Solid)]).
+
+:- foreign(ttf_RenderUTF8_Shaded(+positive, +positive, +positive, +positive, +codes),
+	   [fct_name(gp_TTF_RenderUTF8_Shaded)]).
+
+:- foreign(ttf_RenderUTF8_Blended(+positive, +positive, +positive, +positive, +codes),
+	   [fct_name(gp_TTF_RenderUTF8_Blended)]).
+
+:- foreign(ttf_SizeUTF8(+positive, +codes, -positive, -positive),
+	   [fct_name(gp_TTF_SizeUTF8)]).
+
+%%====================================================================
+%%
+%%                    SDL_mix   (Audio)
+%%
+%%====================================================================
+:- foreign(mix_Linked_Version(-positive,-positive,-positive), [fct_name(gp_Mix_Linked_Version)]).
+
+:- foreign(mix_Init_C(+positive), [fct_name(gp_Mix_Init)]).
+
+:- foreign(mix_OpenAudio_C(+positive,+positive,+positive,+positive),
+	   [fct_name(gp_Mix_OpenAudio)]).
+
+:- foreign(mix_CloseAudio, [fct_name(gp_Mix_CloseAudio)]).
