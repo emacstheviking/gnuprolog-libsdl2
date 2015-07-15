@@ -757,11 +757,7 @@ PlBool gp_SDL_RenderFillCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong rad
 
 //--------------------------------------------------------------------
 //
-//
-//
 //                Texture / Surface / Renderer Functions
-//
-//
 //
 //--------------------------------------------------------------------
 PlBool gp_SDL_LoadBMP(char* filename, PlLong *surface)
@@ -842,11 +838,7 @@ PlBool gp_SDL_RenderCopy(
 
 //--------------------------------------------------------------------
 //
-//
-//
 //                    Display functions
-//
-//
 //
 //--------------------------------------------------------------------
 PlBool gp_SDL_GetNumVideoDisplays(PlLong *displayCount)
@@ -930,11 +922,7 @@ PlBool gp_SDL_GetDisplayMode(PlLong index, PlLong modeIndex, PlTerm *mode)
 
 //--------------------------------------------------------------------
 //
-//
-//
 //                    Window functions
-//
-//
 //
 //--------------------------------------------------------------------
 PlBool gp_SDL_SetWindowFullScreen(PlLong window, PlLong flags)
@@ -956,11 +944,7 @@ PlBool gp_SDL_GetWindowFlags(PlLong window, PlLong * flags)
 
 //--------------------------------------------------------------------
 //
-//
-//
 //                    Audio functions
-//
-//
 //
 //--------------------------------------------------------------------
 PlBool gp_SDL_GetNumAudioDevices(PlBool isCapture, PlLong *count)
@@ -978,11 +962,7 @@ PlBool gp_SDL_GetNumAudioDrivers(PlLong *count)
 
 //--------------------------------------------------------------------
 //
-//
-//
 //                    Platform functions
-//
-//
 //
 //--------------------------------------------------------------------
 PlBool gp_SDL_GetPlatform(PlTerm *output)
@@ -994,11 +974,7 @@ PlBool gp_SDL_GetPlatform(PlTerm *output)
 
 //--------------------------------------------------------------------
 //
-//
-//
 //                    Threading functions
-//
-//
 //
 //--------------------------------------------------------------------
 
@@ -1048,8 +1024,6 @@ PlBool gp_SDL_CreateThread(PlTerm  callback,char*   threadName,PlTerm* thread)
 
 
 //--------------------------------------------------------------------
-//
-//
 //
 //                    Truetype (TFF) Functions
 //
@@ -1101,9 +1075,10 @@ PlBool gp_TTF_RenderUTF8_Solid(PlTerm rndr, PlTerm font, PlLong x, PlLong y, cha
       (SDL_Renderer*)rndr,
       &color.r, &color.g, &color.b, &color.a);
 
-  renderFont((SDL_Renderer*)rndr,
-	     TTF_RenderUTF8_Solid((TTF_Font*)font, text, color),
-	     (int)x, (int)y);
+  renderFont(
+      (SDL_Renderer*)rndr,
+      TTF_RenderUTF8_Solid((TTF_Font*)font, text, color),
+      (int)x, (int)y);
 
   return PL_TRUE;
 }
@@ -1117,9 +1092,10 @@ PlBool gp_TTF_RenderUTF8_Blended(PlTerm rndr, PlTerm font, PlLong x, PlLong y, c
       (SDL_Renderer*)rndr,
       &color.r, &color.g, &color.b, &color.a);
 
-  renderFont((SDL_Renderer*)rndr,
-	     TTF_RenderUTF8_Blended((TTF_Font*)font, text, color),
-	     (int)x, (int)y);
+  renderFont(
+      (SDL_Renderer*)rndr,
+      TTF_RenderUTF8_Blended((TTF_Font*)font, text, color),
+      (int)x, (int)y);
 
   return PL_TRUE;
 }
@@ -1134,10 +1110,11 @@ PlBool gp_TTF_RenderUTF8_Shaded(PlTerm rndr, PlTerm font, PlLong x, PlLong y, ch
       (SDL_Renderer*)rndr,
       &color.r, &color.g, &color.b, &color.a);
 
-  renderFont((SDL_Renderer*)rndr,
-	     TTF_RenderUTF8_Shaded((TTF_Font*)font, text, color, black),
-	     (int)x, (int)y);
-
+  renderFont(
+      (SDL_Renderer*)rndr,
+      TTF_RenderUTF8_Shaded((TTF_Font*)font, text, color, black),
+      (int)x, (int)y);
+  
   return PL_TRUE;
 }
 
@@ -1194,8 +1171,6 @@ void renderFont(SDL_Renderer* r, SDL_Surface* pText, int x, int y)
 
 //--------------------------------------------------------------------
 //
-//
-//
 //                    Mixer functions
 //
 //                      "SDL_mixer"
@@ -1226,6 +1201,13 @@ PlBool gp_Mix_Init(PlLong flags)
 }
 
 
+PlBool gp_Mix_Quit()
+{
+  Mix_Quit();
+  return PL_TRUE;
+}
+
+
 PlBool gp_Mix_OpenAudio(
     PlLong frequency, PlLong format,
     PlLong channels, PlLong chunks)
@@ -1240,11 +1222,13 @@ PlBool gp_Mix_OpenAudio(
   return PL_TRUE;
 }
 
+
 PlBool gp_Mix_CloseAudio()
 {
   Mix_CloseAudio();
   return PL_TRUE;
 }
+
 
 PlBool gp_Mix_LoadMUS(char *filename, PlLong *handle)
 {
@@ -1257,6 +1241,14 @@ PlBool gp_Mix_LoadMUS(char *filename, PlLong *handle)
   return PL_TRUE;
 }
 
+
+PlBool gp_Mix_FreeMusic(PlLong *handle)
+{
+  Mix_FreeMusic((Mix_Music*)handle);
+  return PL_TRUE;
+}
+
+
 PlBool gp_Mix_PlayMusic(PlLong handle, PlLong loops)
 {
   if (-1 == Mix_PlayMusic((Mix_Music*)handle, (int)loops)) {
@@ -1265,3 +1257,53 @@ PlBool gp_Mix_PlayMusic(PlLong handle, PlLong loops)
   return PL_TRUE;
 }
 
+
+PlBool gp_Mix_FadeInMusic(PlLong handle, PlLong loops, PlLong ms)
+{
+  if (-1 == Mix_FadeInMusic((Mix_Music*)handle, (int)loops, (int)ms)) {
+    RETURN_MIX_FAIL(Mix_FadeInMusic);
+  }
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_FadeInMusicPos(PlLong handle, PlLong loops, PlLong ms, double pos)
+{
+  if (-1 == Mix_FadeInMusicPos((Mix_Music*)handle, (int)loops, (int)ms, pos)) {
+    RETURN_MIX_FAIL(Mix_FadeInMusicPos);
+  }
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_VolumeMusic(PlLong volume, PlLong *oldVolume)
+{
+  *oldVolume = (PlLong)Mix_VolumeMusic((int)volume);
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_HaltMusic()
+{
+  Mix_HaltMusic();
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_PauseMusic()
+{
+  Mix_PauseMusic();
+  return PL_TRUE;
+}
+
+PlBool gp_Mix_ResumeMusic()
+{
+  Mix_ResumeMusic();
+  return PL_TRUE;
+}
+
+PlBool gp_Mix_RewindMusic()
+{
+  Mix_RewindMusic();
+  return PL_TRUE;
+}

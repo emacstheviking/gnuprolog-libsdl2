@@ -1,9 +1,31 @@
 mixertest :-
+	sdl_Init([audio]),
 	mix_Linked_Version(Maj, Min, Patch),
 	format("SDL_Mixer: ~w.~w.~w~n", [Maj, Min, Patch]),
 	sdl_Init([audio]),
-	mix_OpenAudio(22050, [], 2, 4096),
-	mix_CloseAudio.
+	mix_OpenAudio(22050, [default_format], 2, 4096),
+	mix_LoadMUS("/Users/seancharles/Music/djcircuit.mp3", Music),
+	format("Fading in the music now over 5 seconds: ~w~n....", [Music]),
+	mix_VolumeMusic(128, _),
+	mix_FadeInMusic(Music, 1, 5000),
+	sdl_Delay(5000),
+	format("Reduce volume to 50%% for two seconds~n", []),
+	mix_VolumeMusic(64, _),
+	sdl_Delay(2000),
+ 	format("Reduce volume to 25%% for two seconds~n", []),
+	mix_VolumeMusic(32, _),
+	sdl_Delay(2000),
+ 	format("Reduce volume to 6.25%% for two seconds~n", []),
+	mix_VolumeMusic(8, _),
+	sdl_Delay(2000),
+	format("Max volume to 100%%, play three seconds then pause~n", []),
+	mix_VolumeMusic(128, _),
+	sdl_Delay(3000),
+	mix_PauseMusic,
+	sdl_Delay(3000),
+	format("Resume playback~n", []),
+	mix_ResumeMusic.
+
 
 check_sdl :-
 	sdl_Init([video]),
