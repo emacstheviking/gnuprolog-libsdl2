@@ -799,6 +799,38 @@ PlBool gp_SDL_RenderCopy(
 }
 
 
+PlBool gp_SDL_RenderCopyEx(
+    PlLong dstRenderer,
+    PlLong dstX, PlLong dstY, PlLong dstW, PlLong dstH,
+    PlLong srcTexture,
+    PlLong srcX, PlLong srcY, PlLong srcW, PlLong srcH,
+    double angle,
+    PlLong centerX, PlLong centerY,
+    PlLong flip)
+{
+  SDL_Rect srcRect;
+  SDL_Rect dstRect;
+
+  srcRect.x = srcX;
+  srcRect.y = srcY;
+  srcRect.w = srcW;
+  srcRect.h = srcH;
+
+  dstRect.x = dstX;
+  dstRect.y = dstY;
+  dstRect.w = dstW;
+  dstRect.h = dstH;
+
+  SDL_RenderCopy(
+      (SDL_Renderer*)dstRenderer,
+      (SDL_Texture*)srcTexture,
+      &srcRect,
+      &dstRect);
+
+  return PL_TRUE;
+}
+
+
 //--------------------------------------------------------------------
 //
 //                    Display functions

@@ -78,6 +78,11 @@ PlBool gp_Mix_CloseAudio()
 }
 
 
+//--------------------------------------------------------------------
+//
+// "4.5 Music Playing"
+//
+//--------------------------------------------------------------------
 PlBool gp_Mix_LoadMUS(char *filename, PlLong *handle)
 {
   Mix_Music *music = Mix_LoadMUS(filename);
@@ -182,4 +187,39 @@ PlBool gp_Mix_QuerySpec(PlLong *frequency, PlLong *format, PlLong *channels, PlL
   *channels  = (PlLong)chn;
   *opened    = (PlLong)open;
   return PL_TRUE;
+}
+
+
+//--------------------------------------------------------------------
+//
+// "4.2 Samples"
+//
+//--------------------------------------------------------------------
+PlBool gp_Mix_GetNumChunkDecoders(PlLong *count)
+{
+  *count = (PlLong)Mix_GetNumChunkDecoders();
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_GetChunkDecoder(PlLong index, PlTerm *name)
+{
+  const char *decoderName = Mix_GetChunkDecoder((int)index);
+  if (decoderName) {
+    *name = Pl_Create_Atom(decoderName);
+    return PL_TRUE;
+  }
+  return PL_FALSE;
+}
+
+
+PlBool gp_Mix_LoadWAV(char* filename, PlLong *sample)
+{
+  Mix_Chunk *chunk = Mix_LoadWAV(filename);
+
+  if (chunk) {
+    *sample = (PlLong)chunk;
+    return PL_TRUE;
+  }
+  RETURN_MIX_FAIL(Mix_LoadWAV);
 }

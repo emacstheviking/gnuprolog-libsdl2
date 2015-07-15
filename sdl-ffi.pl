@@ -12,17 +12,17 @@
 
 %% Window functions
 
-:- foreign(sdl_CreateWindow_C(+codes, +integer, +integer, +integer, +integer, +integer, -positive), [fct_name(gp_SDL_CreateWindow)]).
+:- foreign(sdl_CreateWindow_C(+codes, +integer, +integer, +positive, +positive, +integer, -positive), [fct_name(gp_SDL_CreateWindow)]).
 :- foreign(sdl_DestroyWindow(+positive), [fct_name(gp_SDL_DestroyWindow)]).
 :- foreign(sdl_SetWindowTitle(+positive, +codes), [fct_name(gp_SDL_SetWindowTitle)]).
 
 
 %% Render functions
 
-:- foreign(sdl_CreateRenderer_C(+positive, +integer, +integer, -positive), [fct_name(gp_SDL_CreateRenderer)]).
+:- foreign(sdl_CreateRenderer_C(+positive, +integer, +positive, -positive), [fct_name(gp_SDL_CreateRenderer)]).
 :- foreign(sdl_DestroyRenderer(+positive), [fct_name(gp_SDL_DestroyRenderer)]).
 :- foreign(sdl_CreateWindowAndRenderer_C(+integer, +integer, +integer, -positive, -positive), [fct_name(gp_SDL_CreateWindowAndRenderer)]).
-:- foreign(sdl_SetRenderDrawColor(+positive, +integer, +integer, +integer, +integer), [fct_name(gp_SDL_SetRenderDrawColor)]).
+:- foreign(sdl_SetRenderDrawColor(+positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_SetRenderDrawColor)]).
 :- foreign(sdl_RenderClear(+positive), [fct_name(gp_SDL_RenderClear)]).
 :- foreign(sdl_RenderPresent(+positive), [fct_name(gp_SDL_RenderPresent)]).
 :- foreign(sdl_RenderDrawPoint(+positive, +integer, +integer), [fct_name(gp_SDL_RenderDrawPoint)]).
@@ -30,17 +30,20 @@
 :- foreign(sdl_RenderDrawRect(+positive, +integer, +integer, +integer, +integer), [fct_name(gp_SDL_RenderDrawRect)]).
 :- foreign(sdl_RenderFillRect(+positive, +integer, +integer, +integer, +integer), [fct_name(gp_SDL_RenderFillRect)]).
 %% ADDITIONS to "SDL" for your convenience!
-:- foreign(sdl_RenderDrawCircle(+positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderDrawCircle)]).
-:- foreign(sdl_RenderFillCircle(+positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderFillCircle)]).
+:- foreign(sdl_RenderDrawCircle(+positive, +integer, +integer, +positive), [fct_name(gp_SDL_RenderDrawCircle)]).
+:- foreign(sdl_RenderFillCircle(+positive, +integer, +integer, +positive), [fct_name(gp_SDL_RenderFillCircle)]).
 
 
 %% Surface and Texture functions
 
 :- foreign(sdl_CreateTexture(+positive, +integer, +integer, +integer, +integer, -positive), [fct_name(gp_SDL_CreateTexture_C)]).
 :- foreign(sdl_CreateTextureFromSurface(+positive, +positive, -positive), [fct_name(gp_SDL_CreateTextureFromSurface)]).
+:- foreign(sdl_DestroyTexture(+positive), [fct_name(gp_SDL_DestroyTexture)]).
 :- foreign(sdl_FreeSurface(+positive), [fct_name(gp_SDL_FreeSurface)]).
 :- foreign(sdl_RenderCopyDefaults(+positive, +positive), [fct_name(gp_SDL_RenderCopyDefaults)]).
 :- foreign(sdl_RenderCopy(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderCopyDefaults)]).
+:- foreign(sdl_RenderCopyEx_C(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +integer, +integer, +integer, +positive), [fct_name(gp_SDL_RenderCopyEx)]).
+
 
 
 %% Event functions
@@ -124,6 +127,10 @@
 :- foreign(mix_Quit, [fct_name(gp_Mix_Quit)]).
 :- foreign(mix_OpenAudio_C(+positive,+positive,+positive,+positive), [fct_name(gp_Mix_OpenAudio)]).
 :- foreign(mix_CloseAudio, [fct_name(gp_Mix_CloseAudio)]).
+
+
+%% Music functions
+
 :- foreign(mix_LoadMUS(+codes, -positive), [fct_name(gp_Mix_LoadMUS)]).
 :- foreign(mix_FreeMusic(+positive), [fct_name(gp_Mix_FreeMusic)]).
 :- foreign(mix_PlayMusic(+positive, +positive), [fct_name(gp_Mix_PlayMusic)]).
@@ -136,3 +143,14 @@
 :- foreign(mix_ResumeMusic, [fct_name(gp_Mix_ResumeMusic)]).
 :- foreign(mix_RewindMusic, [fct_name(gp_Mix_RewindMusic)]).
 :- foreign(mix_QuerySpec(-positive, -positive, -positive, -positive), [fct_name(gp_Mix_QuerySpec)]).
+
+
+%% Sample functions
+
+:-foreign(mix_GetNumChunkDecoders(-positive), [fct_name(gp_Mix_GetNumChunkDecoders)]).
+:-foreign(mix_GetChunkDecoder(+positive, -atom), [fct_name(gp_Mix_GetChunkDecoder)]).
+
+%% :-foreign(, [fct_name()]).
+
+
+

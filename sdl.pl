@@ -34,7 +34,7 @@ sdl_Init :-
 sdl_Init(Flags) :-
 	sdl_make_flags(Flags, 'SDL_Init', Value),
 	sdl_Init_C(Value).
-	
+
 
 mix_OpenAudio :-
 	%% The defaults:
@@ -97,6 +97,26 @@ sdl_CreateWindowAndRenderer(Width, Height, Flags, Wnd, Rndr) :-
 	format("SDL.PL: gp_SDL_CreateWindowAndRenderer_C(~w, ~w, ~w, Wnd, Rndr).~n",
 	       [Width, Height, Value]),
 	sdl_CreateWindowAndRenderer_C(Width, Height, Value, Wnd, Rndr).
+
+
+sdl_RenderCopyEx(Renderer, Texture,
+		 srcX, srcY, srcW, srcH,
+		 dstX, dstY, dstW, dstH,
+		 Angle,
+		 CenterX, CenterY,
+		 Flip) :-
+	nonvar(Renderer), nonvar(Texture),
+	integer(srcX), integer(srcY), integer(srcW), integer(srcH),
+	integer(dstX), integer(dstY), integer(dstW), integer(dstH),
+	number(Angle),
+	list(Flip),
+	sdl_make_flags(Flip, 'Sdl_RenderCopyEx', Value),
+	sdl_RenderCopyEx_C(Renderer, Texture,
+			   srcX, srcY, srcW, srcH,
+			   dstX, dstY, dstW, dstH,
+			   Angle,
+			   CenterX, CenterY,
+			   Value).
 
 
 %%--------------------------------------------------------------------
@@ -168,40 +188,46 @@ sdl_scan_flags([_|T], Lookup, Acc, Out) :-
 %%
 %%--------------------------------------------------------------------
 sdl_constants('SDL_Init',
-	      [ timer          - 0x000001
-	      , audio          - 0x000010
-	      , video          - 0x000020
-	      , joystick       - 0x000200
-	      , haptic         - 0x001000
-	      , gamecontroller - 0x002000
-	      , events         - 0x004000
-	      , everything     - 0x007231
-	      , noparachute    - 0x100000
+	      [ timer           - 0x000001
+	      , audio           - 0x000010
+	      , video           - 0x000020
+	      , joystick        - 0x000200
+	      , haptic          - 0x001000
+	      , gamecontroller  - 0x002000
+	      , events          - 0x004000
+	      , everything      - 0x007231
+	      , noparachute     - 0x100000
 	      ]).
 
 sdl_constants('SDL_CreateWindow',
-	      [ undefined      - 0x1fff0000
-	      , centered       - 0x2fff0000
+	      [ undefined       - 0x1fff0000
+	      , centered        - 0x2fff0000
 	      ]).
 
 sdl_constants('SDL_ShowSimpleMessageBox',
-	      [ error          - 0x00000010
-	      , warning        - 0x00000020
-	      , information    - 0x00000040
+	      [ error           - 0x00000010
+	      , warning         - 0x00000020
+	      , information     - 0x00000040
 	      ]).
 
 sdl_constants('SDL_CreateRenderer',
-	      [ software       - 0x00000001
-	      , accelerated    - 0x00000002
-	      , presentvsync   - 0x00000004
-	      , targettexture  - 0x00000008
+	      [ software        - 0x00000001
+	      , accelerated     - 0x00000002
+	      , presentvsync    - 0x00000004
+	      , targettexture   - 0x00000008
+	      ]).
+
+sdl_constants('SDL_RenderCopyEx',
+	      [ none            - 0x00000000
+	      , flip_horizontal - 0x00000001
+	      , flip_vertical   - 0x00000002
 	      ]).
 
 sdl_constants('SDL_CreateTexture',
-	      [ software       - 0x00000001
-	      , accelerated    - 0x00000002
-	      , presentvsync   - 0x00000004
-	      , targettexture  - 0x00000008
+	      [ software        - 0x00000001
+	      , accelerated     - 0x00000002
+	      , presentvsync    - 0x00000004
+	      , targettexture   - 0x00000008
 	      ]).
 
 sdl_constants('SDL_SetWindowFullScreen',
