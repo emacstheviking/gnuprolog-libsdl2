@@ -1,6 +1,6 @@
 .PHONY: tags
 
-.DEFAULT_GOAL := sdl
+.DEFAULT_GOAL := sdl2
 
 tags:
 	rm -f TAGS
@@ -10,14 +10,17 @@ tags:
 
 sdl:
 	gplc \
-	-C -I./SDL2/gp/include \
-	-L -L./SDL2/gp/lib \
-	-L -lSDL2 -L -lSDL2_ttf -L -lSDL2_image -L -lSDL2_mixer -o sdltest \
+	-C -I/Library/Frameworks/SDL2.framework/Headers \
+	-C -I/Library/Frameworks/SDL2_ttf.framework/Headers \
+	-C -I/Library/Frameworks/SDL2_mixer.framework/Headers \
+	-C -I/Library/Frameworks/SDL2_image.framework/Headers \
+	-L -framework SDL2 -L -framework SDL2_ttf -L -framework SDL2_image -L -framework SDL2_mixer -o sdltest \
 	sdl-ffi.pl sdl.pl sdl_lib.c
 
 clean:
 	rm *~
 	rm -fr html
+	rm sdltest
 
 doc:
 	doxygen Doxyfile

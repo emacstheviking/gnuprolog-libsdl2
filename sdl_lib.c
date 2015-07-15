@@ -3,9 +3,10 @@
 #include <string.h>
 
 #include <gprolog.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
+#include <SDL_image.h>
+#include <SDL_mixer.h>
 
 #include "static_data.h"
 
@@ -1229,6 +1230,10 @@ PlBool gp_Mix_OpenAudio(
     PlLong frequency, PlLong format,
     PlLong channels, PlLong chunks)
 {
+  if (0 == format) {
+    format = MIX_DEFAULT_FORMAT;
+  }
+  
   if (Mix_OpenAudio((int)frequency, (int)format, (int)channels, (int)chunks)) {
     RETURN_MIX_FAIL(Mix_OpenAudio);
   }
@@ -1240,3 +1245,23 @@ PlBool gp_Mix_CloseAudio()
   Mix_CloseAudio();
   return PL_TRUE;
 }
+
+PlBool gp_Mix_LoadMUS(char *filename, PlLong *handle)
+{
+  Mix_Music *music = Mix_LoadMUS(filename);
+
+  if (0 == music) {
+    RETURN_MIX_FAIL(Mix_LoadMUS);
+  }
+  *handle = (PlLong)music;
+  return PL_TRUE;
+}
+
+PlBool gp_Mix_PlayMusic(PlLong handle, PlLong loops)
+{
+  if (-1 == Mix_PlayMusic((Mix_Music*)handle, (int)loops)) {
+    RETURN_MIX_FAIL(Mix_PlayMusic);
+  }
+  return PL_TRUE;
+}
+

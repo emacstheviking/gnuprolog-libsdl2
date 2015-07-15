@@ -180,3 +180,6 @@
 	   [fct_name(gp_Mix_OpenAudio)]).
 
 :- foreign(mix_CloseAudio, [fct_name(gp_Mix_CloseAudio)]).
+
+:- foreign(mix_LoadMUS(+codes, -positive), [fct_name(gp_Mix_LoadMUS)]).
+:- foreign(mix_PlayMusic(+positive, +positive), [fct_name(gp_Mix_PlayMusic)]).
