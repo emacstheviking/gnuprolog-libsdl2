@@ -115,6 +115,15 @@ PlBool gp_Mix_FadeInMusic(PlLong handle, PlLong loops, PlLong ms)
 }
 
 
+PlBool gp_Mix_FadeOutMusic(PlLong ms)
+{
+  if (-1 == Mix_FadeOutMusic((int)ms)) {
+    RETURN_MIX_FAIL(Mix_FadeOutMusic);
+  }
+  return PL_TRUE;
+}
+
+
 PlBool gp_Mix_FadeInMusicPos(PlLong handle, PlLong loops, PlLong ms, double pos)
 {
   if (-1 == Mix_FadeInMusicPos((Mix_Music*)handle, (int)loops, (int)ms, pos)) {

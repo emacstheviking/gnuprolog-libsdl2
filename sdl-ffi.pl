@@ -128,7 +128,8 @@
 :- foreign(mix_FreeMusic(+positive), [fct_name(gp_Mix_FreeMusic)]).
 :- foreign(mix_PlayMusic(+positive, +positive), [fct_name(gp_Mix_PlayMusic)]).
 :- foreign(mix_FadeInMusic(+positive, +positive, +positive), [fct_name(gp_Mix_FadeInMusic)]).
-:- foreign(mix_FadeInMusicPos(+positive, +positive, +positive, +float), [fct_name(gp_Mix_FadeInMusicPos)]).
+:- foreign(mix_FadeInMusic(+positive, +positive, +positive), [fct_name(gp_Mix_FadeInMusic)]).
+:- foreign(mix_FadeOutMusic(+positive), [fct_name(gp_Mix_FadeOutMusic)]).
 :- foreign(mix_VolumeMusic(+positive, -positive), [fct_name(gp_Mix_VolumeMusic)]).
 :- foreign(mix_HaltMusic, [fct_name(gp_Mix_HaltMusic)]).
 :- foreign(mix_PauseMusic, [fct_name(gp_Mix_PauseMusic)]).
