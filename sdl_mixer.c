@@ -223,3 +223,66 @@ PlBool gp_Mix_LoadWAV(char* filename, PlLong *sample)
   }
   RETURN_MIX_FAIL(Mix_LoadWAV);
 }
+
+
+PlBool gp_Mix_FreeChunk(PlLong chunk)
+{
+  Mix_FreeChunk((Mix_Chunk*)chunk);
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_VolumeChunk(PlLong chunk, PlLong volume, PlLong *oldVolume)
+{
+  *oldVolume = (PlLong)Mix_VolumeChunk((Mix_Chunk*)chunk, (int)volume);
+  return PL_TRUE;
+}
+
+
+//--------------------------------------------------------------------
+//
+// "4.3 Channels"
+//
+//--------------------------------------------------------------------
+PlBool gp_Mix_AllocateChannels(PlLong numchans, PlLong *actual)
+{
+  *actual = (PlLong)Mix_AllocateChannels((int)numchans);
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_Volume(PlLong channel, PlLong volume, PlLong *current)
+{
+  *current = (PlLong)Mix_Volume((int)channel, (int)volume);
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_PlayChannel(PlLong channel, PlLong chunk, PlLong loops, PlLong *out)
+{
+  int output = Mix_PlayChannel((int)channel, (Mix_Chunk*)chunk, (int)loops);
+
+  if (-1 == output) {
+    RETURN_MIX_FAIL(Mix_PlayChannel);
+  }
+
+  *out = (PlLong)output;
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_PlayChannelTimed(
+    PlLong channel, PlLong chunk,
+    PlLong loops, PlLong ticks,
+    PlLong *out)
+{
+  int output = Mix_PlayChannelTimed((int)channel, (Mix_Chunk*)chunk, (int)loops, (int)ticks);
+
+  if (-1 == output) {
+    RETURN_MIX_FAIL(Mix_PlayChannelTimed);
+  }
+
+  *out = (PlLong)output;
+  return PL_TRUE;
+}
+

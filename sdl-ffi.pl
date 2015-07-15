@@ -145,12 +145,20 @@
 :- foreign(mix_QuerySpec(-positive, -positive, -positive, -positive), [fct_name(gp_Mix_QuerySpec)]).
 
 
-%% Sample functions
+%% Sample functions (note, "hairy" loaders like _RW, _RAW etc not covered!)
 
 :-foreign(mix_GetNumChunkDecoders(-positive), [fct_name(gp_Mix_GetNumChunkDecoders)]).
 :-foreign(mix_GetChunkDecoder(+positive, -atom), [fct_name(gp_Mix_GetChunkDecoder)]).
+:-foreign(mix_LoadWAV(+codes, -positive), [fct_name(gp_Mix_LoadWAV)]).
+:-foreign(mix_FreeChunk(+positive), [fct_name(gp_Mix_FreeChunk)]).
+:-foreign(mix_VolumeChunk(+positive, +integer, -integer), [fct_name(gp_Mix_VolumeChunk)]).
+
+
+%% Channel functions
+
+:-foreign(mix_AllocateChannels(+integer, -integer), [fct_name(gp_Mix_AllocateChannels)]).
+:-foreign(mix_Volume(+integer, +integer, -integer), [fct_name(gp_Mix_Volume)]).
+:-foreign(mix_PlayChannel(+integer, +positive, +integer, -integer), [fct_name(gp_Mix_PlayChannel)]).
+:-foreign(mix_PlayChannelTimed(+integer, +positive, +integer, +integer, -integer), [fct_name(gp_Mix_PlayChannelTimed)]).
 
 %% :-foreign(, [fct_name()]).
-
-
-
