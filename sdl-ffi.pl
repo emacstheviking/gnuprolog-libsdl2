@@ -55,7 +55,7 @@
 :- foreign(sdl_SetTextInputRect(+integer, +integer, +integer, +integer), [fct_name(gp_SDL_SetTextInputRect)]).
 
 
-%% LoadBMP
+%% LoadBMP -- it has to be a 24-bpp bitmap by the way. Gimp can do it.
 
 :- foreign(sdl_LoadBMP(+codes, -positive),  [fct_name(gp_SDL_LoadBMP)]).
 

@@ -15,13 +15,6 @@ int g_atomDropFile    = 0;
 int g_atomDisplayMode = 0;
 
 
-#define RETURN_SDL_FAIL(F)					\
-  fprintf(stderr, "%s failed -> %s\n", #F, SDL_GetError());	\
-  return PL_FALSE;
-
-#define SHOW_SDL_FAIL(F) fprintf(stderr, "%s failed -> %s\n", #F, SDL_GetError());
-
-
 #define EV(F) F(&ev, &szTerm[0])
 #define EVB(F) F(&ev, &szTerm[0]); break
 #define EVWRAPPER(F) void F(SDL_Event *e, char* t)
@@ -939,55 +932,4 @@ PlBool gp_SDL_GetPlatform(PlTerm *output)
 {
   *output = Pl_Mk_Atom(Pl_Create_Atom(SDL_GetPlatform()));
   return  PL_TRUE;
-}
-
-
-//--------------------------------------------------------------------
-//
-//                    Threading functions
-//
-//--------------------------------------------------------------------
-
-// if I made the data the PlTerm that was the callback....
-
-int gp_ThreadHandler(void* data)
-{
-  int functor, arity;
-  int result;
-  PlTerm* pTerm = (PlTerm*)data;
-  PlTerm* arg;
-
-  //  arg = Pl_Rd_Callable_Check(*pTerm, &functor, &arity);
-  //Pl_Query_Begin(PL_FALSE);
-
-  //result = Pl_Query_Call(functor, arity, arg);
-
-  //Pl_Query_End(PL_CUT); // release memory?!?!
-
-  Pl_Write(*pTerm);
-
-  free(data);
-  fprintf(stdout, "THREAD DEATH\n");
-  return result;
-}
-
-
-PlBool gp_SDL_CreateThread(PlTerm  callback,char*   threadName,PlTerm* thread)
-{
-  PlTerm* pTerm = calloc(1, sizeof(PlTerm));
-
-  if (pTerm)
-  {
-    Pl_Copy_Term(pTerm, &callback);
-
-    SDL_Thread *t = SDL_CreateThread(gp_ThreadHandler, threadName, (void*)pTerm);
-
-    if (t) {
-      SDL_DetachThread(t);
-      *thread = (PlLong)t;
-      return PL_TRUE;
-    }
-    RETURN_SDL_FAIL(SDL_CreateThread);
-  }
-  return PL_FALSE;
 }

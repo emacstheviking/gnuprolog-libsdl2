@@ -4,7 +4,7 @@ mixertest :-
 	format("SDL_Mixer: ~w.~w.~w~n", [Maj, Min, Patch]),
 	sdl_Init([audio]),
 	mix_OpenAudio(22050, [default_format], 2, 4096),
-	mix_LoadMUS("/Users/seancharles/Music/djcircuit.mp3", Music),
+	mix_LoadMUS("./assets/test-music.wav", Music),
 	format("Fading in the music now over 5 seconds: ~w~n....", [Music]),
 	mix_VolumeMusic(128, _),
 	mix_FadeInMusic(Music, 1, 5000),

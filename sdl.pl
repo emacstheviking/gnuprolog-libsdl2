@@ -8,24 +8,26 @@
 %% and also tried on Ubuntu 14.04 LTS but has never been tried on
 %% Windows. YMMV.
 %%
-%% All the Prolog predicates shown here are not all those available,
-%% some are written in pure C code, see sdl_lib.c for details.
+%% My approach, after an initial attempt in pure C, has been to
+%% leverage the power of Prolog to perform all parameter vetting etc
+%% to drastically reduce the amount of C code I had to write, it's
+%% slower to write and more error prone and of course it makes sense
+%% to use Prolog for the heavy lifting.
 %%
-%% My approach, after a pure C initial attempt, was to leverage the
-%% power of Prolog to perform all parameter vetting etc to drastically
-%% reduce the amount of C code I had to write, it's slower to write
-%% and more error prone and of course it makes sense to use Prolog for
-%% the heavy lifting.
+%% This module / binding also incorporates SDL utilities:
 %%
+%%      - SDL_ttf
+%%      - SDL_image
+%%      - SDL_mixer
 %%
-%% The end result is a core C library (sdl_lib.c) that does just
-%% enough to call the corresponding SDL library function and return
-%% the result into Prolog space.
+%% You now have not only the power of GNU Prolog at your disposal but
+%% one of the most portable and easy-to-use graphics libraries ever
+%% written IMHO.
+%%
+%%          START WRITING AWESOME APPLICATIONS NOW!   ;)
 %%
 %% Any bug reports, improvements etc can be offered via GitHub.
-%%
 %%--------------------------------------------------------------------
-
 sdl_Init :-
 	sdl_Init([everything]).
 
@@ -35,6 +37,10 @@ sdl_Init(Flags) :-
 	
 
 mix_OpenAudio :-
+	%% The defaults:
+	%%
+	%%22050 KHz, default audio format, two channels and a 4K
+	%%internal buffer
 	mix_OpenAudio(22050, [default_format], 2, 4096).
 
 mix_OpenAudio(Freq, Flags, Channels, BufSize) :-

@@ -1,3 +1,10 @@
+#define RETURN_SDL_FAIL(F)					\
+  fprintf(stderr, "%s failed -> %s\n", #F, SDL_GetError());	\
+  return PL_FALSE;
+
+#define SHOW_SDL_FAIL(F) fprintf(stderr, "%s failed -> %s\n", #F, SDL_GetError());
+
+
 // Uncomment for useful output when tinkering
 #define __DEBUG__
 
