@@ -34,6 +34,8 @@ sdl_Init(Flags) :-
 	sdl_Init_C(Value).
 	
 
+mix_OpenAudio :-
+	mix_OpenAudio(22050, [default_format], 2, 4096).
 
 mix_OpenAudio(Freq, Flags, Channels, BufSize) :-
 	sdl_make_flags(Flags, 'Mix_OpenAudio', Value),

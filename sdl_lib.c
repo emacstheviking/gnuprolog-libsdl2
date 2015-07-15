@@ -1307,3 +1307,22 @@ PlBool gp_Mix_RewindMusic()
   Mix_RewindMusic();
   return PL_TRUE;
 }
+
+
+PlBool gp_Mix_QuerySpec(PlLong *frequency, PlLong *format, PlLong *channels, PlLong *opened)
+{
+  int hz, chn;
+  Uint16 fmt;
+
+  int open = Mix_QuerySpec(&hz, &fmt, &chn);
+
+  if (0 == open) {
+    RETURN_MIX_FAIL(Mix_QuerySpec);
+  }
+
+  *frequency = (PlLong)hz;
+  *format    = (PlLong)fmt;
+  *channels  = (PlLong)chn;
+  *opened    = (PlLong)open;
+  return PL_TRUE;
+}

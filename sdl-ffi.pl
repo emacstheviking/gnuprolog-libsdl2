@@ -121,7 +121,7 @@
 %%====================================================================
 :- foreign(mix_Linked_Version(-positive,-positive,-positive), [fct_name(gp_Mix_Linked_Version)]).
 :- foreign(mix_Init_C(+positive), [fct_name(gp_Mix_Init)]).
-:- foreign(mix_Quit(+positive),   [fct_name(gp_Mix_Quit)]).
+:- foreign(mix_Quit, [fct_name(gp_Mix_Quit)]).
 :- foreign(mix_OpenAudio_C(+positive,+positive,+positive,+positive), [fct_name(gp_Mix_OpenAudio)]).
 :- foreign(mix_CloseAudio, [fct_name(gp_Mix_CloseAudio)]).
 :- foreign(mix_LoadMUS(+codes, -positive), [fct_name(gp_Mix_LoadMUS)]).
@@ -134,4 +134,4 @@
 :- foreign(mix_PauseMusic, [fct_name(gp_Mix_PauseMusic)]).
 :- foreign(mix_ResumeMusic, [fct_name(gp_Mix_ResumeMusic)]).
 :- foreign(mix_RewindMusic, [fct_name(gp_Mix_RewindMusic)]).
-
+:- foreign(mix_QuerySpec(-positive, -positive, -positive, -positive), [fct_name(gp_Mix_QuerySpec)]).
