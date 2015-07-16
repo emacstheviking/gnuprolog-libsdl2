@@ -6,7 +6,7 @@
 
 
 // Uncomment for useful output when tinkering
-#define __DEBUG__
+// #define __DEBUG__
 
 
 // Debugging helpers

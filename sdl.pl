@@ -84,15 +84,16 @@ sdl_CreateWindow(Title, X, Y, Width, Height, Flags, Wnd) :-
 	sdl_make_flags([X], 'SDL_CreateWindow', XPos),
 	sdl_make_flags([Y], 'SDL_CreateWindow', YPos),
 	list(Flags),
-	sdl_make_flags(Flags, 'SDL_CreateWindow', Value),
+	sdl_make_flags(Flags, 'SDL_GetWindowFlags', Value),
+	format("Window flags: ~w~n", [Value]),
 	sdl_CreateWindow_C(Title, XPos, YPos, Width, Height, Value, Wnd).
 
 
 
 
-sdl_SetWindowFullScreen(Wnd, Flags) :-
+sdl_SetWindowFullScreen(Wnd, Flag) :-
 	nonvar(Wnd),
-	sdl_make_flags('SDL_SetWindowFullScreen', Flags, Value),
+	sdl_make_flags('SDL_SetWindowFullScreen', [Flag], Value),
 	sdl_SetWindowFullScreen_C(Wnd, Value).
 
 

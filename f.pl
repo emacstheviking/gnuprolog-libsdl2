@@ -117,22 +117,25 @@ textest(F) :-
 	format_to_codes(Filename, "/Users/seancharles/Pictures/~s", [F]),
 	sdl_Init([video]),
 	img_Init,
-	sdl_CreateWindow("Texture Test", 0, 0, 0, 0, [], W),
+	sdl_CreateWindow("Texture Test", undefined, undefined, 0, 0, [], W),
 	sdl_CreateRenderer(W, -1, [accelerated, presentvsync], R),
+
 	img_Load(Filename, Img),
 	sdl_CreateTextureFromSurface(R, Img, Tex),
-	sdl_FreeSurface(Img),
 	sdl_QueryTexture(Tex, _, _, TW, TH),
+	sdl_FreeSurface(Img),
 	sdl_SetWindowSize(W, TW, TH),
+
 	sdl_RenderCopyDefaults(R, Tex),
 	sdl_RenderPresent(R),
+
 	evloop,
+
 	sdl_DestroyTexture(Tex),
 	sdl_DestroyRenderer(R),
 	sdl_DestroyWindow(W),
+	img_Quit,
 	sdl_Quit.
-
-
 
 
 %%--------------------------------------------------------------------
