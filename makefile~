@@ -4,10 +4,9 @@
 
 tags:
 	rm -f TAGS
-	find /Library/Frameworks/SDL2.framework/Headers -name "*.h" | etags -
-	find /Library/Frameworks/SDL2_ttf.framework/Headers  -name "*.h" | etags -
-	find /Library/Frameworks/SDL2_mixer.framework/Headers  -name "*.h" | etags -
-	find /Library/Frameworks/SDL2_image.framework/Headers  -name "*.h" | etags -
+	find ./SDL2/gp/include/SDL2 -name "*.h" | etags -
+	find ~/Documents/RUNTIMES/gprolog-1.4.4/src -name "*.h" | etags -a -
+	find ~/Documents/RUNTIMES/gprolog-1.4.4/src -name "*.c" | etags -a -
 
 sdl_osx:
 	gplc \

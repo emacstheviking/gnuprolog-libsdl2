@@ -386,15 +386,18 @@ PlBool gp_SDL_Delay(PlLong delay_in_milliseconds)
 /**
  * SDL_ShowSimpleMessageBox
  *
- * @param PlLong flags   simple message box flags
- * @param char*  title   C-string title of the message
- * @param char*  message C-string content of the message
+ * @param SDL_Window* parent  the parent window, 0 for no parent.
+ * @param PlLong      flags   simple message box flags
+ * @param char*       title   C-string title of the message
+ * @param char*       message C-string content of the message
  *
  * @return PL_TRUE
  */
-PlBool gp_SDL_ShowSimpleMessageBox_C(PlLong flags, char* title, char* message)
+PlBool gp_SDL_ShowSimpleMessageBox_C(
+    PlLong parent, char* title,
+    char* message, PlLong flags)
 {
-  SDL_ShowSimpleMessageBox(flags, title, message, NULL);
+  SDL_ShowSimpleMessageBox(flags, title, message, (SDL_Window*)parent);
   return PL_TRUE;
 }
 

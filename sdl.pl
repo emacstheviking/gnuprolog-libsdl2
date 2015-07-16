@@ -36,23 +36,22 @@ sdl_Init(Flags) :-
 	sdl_Init_C(Value).
 
 
+
+
 mix_OpenAudio :-
-	%% The defaults:
-	%%
-	%%22050 KHz, default audio format, two channels and a 4K
-	%%internal buffer
-	mix_OpenAudio(22050, [default_format], 2, 4096).
+	mix_OpenAudio( 22050,		 % 22Khz sample rate
+		       [default_format], % Use "default" audio format
+		       2,		 % Number of channels
+		       4096		 % Buffer size
+		     ).
 
 mix_OpenAudio(Freq, Flags, Channels, BufSize) :-
 	sdl_make_flags(Flags, 'Mix_OpenAudio', Value),
 	mix_OpenAudio_C(Freq, Value, Channels, BufSize).
 
 
-%%--------------------------------------------------------------------
-%%
-%% SDL_CreateWindow
-%%
-%%--------------------------------------------------------------------
+
+
 sdl_CreateWindow(Title, X, Y, Width, Height, Flags, Wnd) :-
 	var(Wnd),
 	list(Title),
@@ -67,17 +66,15 @@ sdl_CreateWindow(Title, X, Y, Width, Height, Flags, Wnd) :-
 	sdl_CreateWindow_C(Title, XPos, YPos, Width, Height, Value, Wnd).
 
 
+
+
 sdl_SetWindowFullScreen(Wnd, Flags) :-
 	sdl_make_flags('SDL_SetWindowFullScreen', Flags, Value),
 	sdl_SetWindowFullScreen_C(Wnd, Value).
 
 
 
-%%--------------------------------------------------------------------
-%%
-%% SDL_CreateRenderer
-%%
-%%--------------------------------------------------------------------
+
 sdl_CreateRenderer(Wnd, Index, Flags, Renderer) :-
 	var(Renderer),
 	nonvar(Wnd),
@@ -89,6 +86,8 @@ sdl_CreateRenderer(Wnd, Index, Flags, Renderer) :-
 	sdl_CreateRenderer_C(Wnd, Index, Value, Renderer).
 
 
+
+
 sdl_CreateWindowAndRenderer(Width, Height, Flags, Wnd, Rndr) :-
 	var(Wnd),
 	var(Rndr),
@@ -97,6 +96,8 @@ sdl_CreateWindowAndRenderer(Width, Height, Flags, Wnd, Rndr) :-
 	format("SDL.PL: gp_SDL_CreateWindowAndRenderer_C(~w, ~w, ~w, Wnd, Rndr).~n",
 	       [Width, Height, Value]),
 	sdl_CreateWindowAndRenderer_C(Width, Height, Value, Wnd, Rndr).
+
+
 
 
 sdl_RenderCopyEx(Renderer, Texture,
@@ -119,37 +120,23 @@ sdl_RenderCopyEx(Renderer, Texture,
 			   Value).
 
 
-%%--------------------------------------------------------------------
-%%
-%% SDL_CreateTexture
-%%
-%%--------------------------------------------------------------------
 
 
-%%--------------------------------------------------------------------
-%%
-%% SDL_ShowSimpleMessageBox
-%%
-%%--------------------------------------------------------------------
 sdl_ShowSimpleMessageBox(Title, Message) :-
-	sdl_ShowSimpleMessageBox(Title, Message, [information]).
+	sdl_ShowSimpleMessageBox(0, Title, Message, information).
 
-sdl_ShowSimpleMessageBox(Title, Message, Flags) :-
-	list(Flags),
+sdl_ShowSimpleMessageBox(Wnd, Title, Message) :-
+	sdl_ShowSimpleMessageBox(Wnd, Title, Message, information).
+
+sdl_ShowSimpleMessageBox(Wnd, Title, Message, Mode) :-
+	nonvar(Wnd),
+	atom(Mode),
 	list(Title),
 	list(Message),
-	sdl_make_flags(Flags, 'SDL_ShowSimpleMessageBox', Value),
-	sdl_ShowSimpleMessageBox_C(Title, Message, Value).
-	
-	
-	
+	sdl_make_flags([Mode], 'SDL_ShowSimpleMessageBox', Value),
+	sdl_ShowSimpleMessageBox_C(Wnd, Title, Message, Value).
 
-			    
-%%--------------------------------------------------------------------
-%%
-%% Internal support code for SDL module
-%%
-%%--------------------------------------------------------------------
+
 
 
 %%--------------------------------------------------------------------
