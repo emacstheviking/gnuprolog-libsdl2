@@ -1,3 +1,9 @@
+
+
+
+imagetest(F) :-
+	img_Init.
+
 mixertest :-
 	sdl_Init([audio]),
 	mix_Linked_Version(Maj, Min, Patch),
@@ -112,18 +118,16 @@ draw_a_dot(R, N) :-
 	draw_a_dot(R, N2).
 
 
-%%--------------------------------------------------------------------
-%%
-%% Textures
-%%
-%%--------------------------------------------------------------------
+
+
 textest :-
 	sdl_Init([video]),
+	img_Init,
 	sdl_CreateWindow("fred", 0, 0, 640, 480, [], W),
 	sdl_CreateRenderer(W, -1, [accelerated, presentvsync], R),
-	sdl_LoadBMP("test.bmp", Bmp),
-	sdl_CreateTextureFromSurface(R, Bmp, Tex),
-	sdl_FreeSurface(Bmp),
+	img_Load("/Users/seancharles/Pictures/hamlet2_indooroutdoorpools.jpg", Img),
+	sdl_CreateTextureFromSurface(R, Img, Tex),
+	sdl_FreeSurface(Img),
 	sdl_RenderCopyDefaults(R, Tex),
 	sdl_RenderPresent(R),
 	evloop,
@@ -131,6 +135,8 @@ textest :-
 	sdl_DestroyRenderer(R),
 	sdl_DestroyWindow(W),
 	sdl_Quit.
+
+
 
 
 %%--------------------------------------------------------------------
