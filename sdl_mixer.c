@@ -239,6 +239,24 @@ PlBool gp_Mix_VolumeChunk(PlLong chunk, PlLong volume, PlLong *oldVolume)
 }
 
 
+PlBool gp_Mix_Playing(PlLong channel, PlLong *status)
+{
+  *status = (PlLong)Mix_Playing((int)channel);
+  return PL_TRUE;
+}
+
+
+PlBool gp_Mix_PlayingMusic(PlLong *status)
+{
+  *status = (PlLong)Mix_PlayingMusic();
+  return PL_TRUE;
+}
+
+
+
+
+
+
 //--------------------------------------------------------------------
 //
 // "4.3 Channels"

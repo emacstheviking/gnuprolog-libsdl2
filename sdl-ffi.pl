@@ -143,6 +143,9 @@
 :- foreign(mix_ResumeMusic, [fct_name(gp_Mix_ResumeMusic)]).
 :- foreign(mix_RewindMusic, [fct_name(gp_Mix_RewindMusic)]).
 :- foreign(mix_QuerySpec(-positive, -positive, -positive, -positive), [fct_name(gp_Mix_QuerySpec)]).
+:- foreign(mix_Playing(+integer, -positive), [fct_name(gp_Mix_Playing)]).
+:- foreign(mix_PlayingMusic, [fct_name(gp_Mix_PlayingMusic)]).
+
 
 
 %% Sample functions (note, "hairy" loaders like _RW, _RAW etc not covered!)
