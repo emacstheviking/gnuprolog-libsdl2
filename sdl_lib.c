@@ -145,6 +145,13 @@ PlBool gp_SDL_SetWindowTitle(PlLong wnd, char* title)
 }
 
 
+PlBool gp_SDL_SetWindowSize(PlLong wnd, PlLong width, PlLong height)
+{
+  SDL_SetWindowSize((SDL_Window*)wnd, (int)width, (int)height);
+  return PL_TRUE;
+}
+
+
 /**
  * SDL_CreateRenderer
  *
@@ -830,6 +837,26 @@ PlBool gp_SDL_RenderCopyEx(
       &srcRect,
       &dstRect);
 
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_QueryTexture(
+    SDL_Texture *texture,
+    PlLong *format, PlLong* access,
+    PlLong *width,  PlLong *height)
+{
+  Uint32 f;
+  int a, w, h;
+  
+  if (0 != SDL_QueryTexture((SDL_Texture*)texture, &f, &a, &w, &h)) {
+    RETURN_SDL_FAIL(SDL_QueryTexture);
+  }
+
+  *format = (PlLong)f;
+  *access = (PlLong)a;
+  *width  = (PlLong)w;
+  *height = (PlLong)h;
   return PL_TRUE;
 }
 

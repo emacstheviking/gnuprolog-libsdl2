@@ -15,7 +15,7 @@
 :- foreign(sdl_CreateWindow_C(+codes, +integer, +integer, +positive, +positive, +integer, -positive), [fct_name(gp_SDL_CreateWindow)]).
 :- foreign(sdl_DestroyWindow(+positive), [fct_name(gp_SDL_DestroyWindow)]).
 :- foreign(sdl_SetWindowTitle(+positive, +codes), [fct_name(gp_SDL_SetWindowTitle)]).
-
+:- foreign(sdl_SetWindowSize(+positive, +integer, +integer), [fct_name(gp_SDL_SetWindowSize)]).
 
 %% Render functions
 
@@ -43,7 +43,9 @@
 :- foreign(sdl_RenderCopyDefaults(+positive, +positive), [fct_name(gp_SDL_RenderCopyDefaults)]).
 :- foreign(sdl_RenderCopy(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderCopyDefaults)]).
 :- foreign(sdl_RenderCopyEx_C(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +integer, +integer, +integer, +positive), [fct_name(gp_SDL_RenderCopyEx)]).
+:- foreign(sdl_QueryTexture(+positive, -positive, -positive, -positive, -positive), [fct_name(gp_SDL_QueryTexture)]).
 
+			    
 
 
 %% Event functions
