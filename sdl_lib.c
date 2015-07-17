@@ -177,6 +177,18 @@ PlBool gp_SDL_CreateRenderer(PlLong *handle, PlLong index, PlLong flags, PlLong 
 }
 
 
+PlBool gp_SDL_GetRenderer(PlLong window, PlLong *rndr)
+{
+  SDL_Renderer *r = SDL_GetRenderer((SDL_Window*)window);
+
+  if (r) {
+    *rndr = (PlLong)r;
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_GetRenderer);
+}
+
+
 /**
  * SDL_CreateWindowAndRenderer
  *
@@ -978,10 +990,109 @@ PlBool gp_SDL_GetNumAudioDevices(PlBool isCapture, PlLong *count)
   return PL_TRUE;
 }
 
+
 PlBool gp_SDL_GetNumAudioDrivers(PlLong *count)
 {
   *count = (PlLong)SDL_GetNumAudioDrivers();
   return PL_TRUE;
+}
+
+
+PlBool gp_SDL_GetAudioDeviceName(PlLong index, PlLong iscapture, PlLong *name)
+{
+  const char *device = SDL_GetAudioDeviceName((int)index, (int)iscapture);
+
+  if (device) {
+    *name = Pl_Create_Atom(device);
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_GetAudioDeviceName);
+}
+
+
+PlBool gp_SDL_RenderGetScale(PlLong rndr, double *scaleX, double *scaleY)
+{
+  float sx, sy;
+  SDL_RenderGetScale((SDL_Renderer*)rndr, &sx, &sy);
+
+  *scaleX = (double)sx;
+  *scaleY = (double)sy;
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderSetScale(PlLong rndr, double scaleX, double scaleY)
+{
+  if (0 == SDL_RenderSetScale((SDL_Renderer*)rndr, (float)scaleX, (float)scaleY)) {
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_RenderSetScale);
+}
+
+
+PlBool gp_SDL_RenderGetLogicalSize(PlLong rndr, PlLong *width, PlLong *height)
+{
+  int w, h;
+
+  SDL_RenderGetLogicalSize((SDL_Renderer*)rndr, &w, &h);
+
+  *width  = (PlLong)w;
+  *height = (PlLong)h;
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderSetLogicalSize(PlLong rndr, PlLong width, PlLong height)
+{
+  int w, h;
+  SDL_RenderGetLogicalSize((SDL_Renderer*)rndr, &w, &h);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderGetViewport(PlLong rndr, PlLong *x, PlLong *y, PlLong *w, PlLong *h)
+{
+  SDL_Rect rect;
+  SDL_RenderGetViewport((SDL_Renderer*)rndr, &rect);
+
+  *x = (PlLong)rect.x;
+  *y = (PlLong)rect.y;
+  *w = (PlLong)rect.w;
+  *h = (PlLong)rect.h;
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderGetClipRect(PlLong rndr, PlLong *x, PlLong *y, PlLong *w, PlLong *h)
+{
+  SDL_Rect rect;
+  SDL_RenderGetClipRect((SDL_Renderer*)rndr, &rect);
+
+  *x = (PlLong)rect.x;
+  *y = (PlLong)rect.y;
+  *w = (PlLong)rect.w;
+  *h = (PlLong)rect.h;
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RenderSetClipRect(PlLong rndr, PlLong x, PlLong y, PlLong w, PlLong h)
+{
+  SDL_Rect rect;
+  rect.x = x;
+  rect.y = y;
+  rect.w = w;
+  rect.h = h;
+  
+  if(0 == SDL_RenderSetClipRect((SDL_Renderer*)rndr, &rect)) {
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_RenderSetClipRect);
 }
 
 

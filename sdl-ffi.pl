@@ -22,6 +22,7 @@
 :- foreign(sdl_CreateRenderer_C(+positive, +integer, +positive, -positive), [fct_name(gp_SDL_CreateRenderer)]).
 :- foreign(sdl_DestroyRenderer(+positive), [fct_name(gp_SDL_DestroyRenderer)]).
 :- foreign(sdl_CreateWindowAndRenderer_C(+integer, +integer, +integer, -positive, -positive), [fct_name(gp_SDL_CreateWindowAndRenderer)]).
+:- foreign(sdl_GetRenderer(+positive, -positive), [fct_name(gp_SDL_GetRenderer)]).
 :- foreign(sdl_SetRenderDrawColor(+positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_SetRenderDrawColor)]).
 :- foreign(sdl_RenderClear(+positive), [fct_name(gp_SDL_RenderClear)]).
 :- foreign(sdl_RenderPresent(+positive), [fct_name(gp_SDL_RenderPresent)]).
@@ -29,6 +30,15 @@
 :- foreign(sdl_RenderDrawLine(+positive, +integer, +integer, +integer, +integer), [fct_name(gp_SDL_RenderDrawLine)]).
 :- foreign(sdl_RenderDrawRect(+positive, +integer, +integer, +integer, +integer), [fct_name(gp_SDL_RenderDrawRect)]).
 :- foreign(sdl_RenderFillRect(+positive, +integer, +integer, +integer, +integer), [fct_name(gp_SDL_RenderFillRect)]).
+:- foreign(sdl_RenderGetScale(+positive, -float, -float), [fct_name(gp_SDL_RenderGetScale)]).
+:- foreign(sdl_RenderSetScale(+positive, +float, +float), [fct_name(gp_SDL_RenderSetScale)]).
+:- foreign(sdl_RenderGetLogicalSize(+positive, -integer, -integer), [fct_name(gp_SDL_RenderGetLogicalSize)]).
+:- foreign(sdl_RenderSetLogicalSize(+positive, +integer, +integer), [fct_name(gp_SDL_RenderSetLogicalSize)]).
+:- foreign(sdl_RenderGetViewport(+positive, -positive, -positive, -positive, -positive), [fct_name(gp_SDL_RenderGetViewport)]).
+:- foreign(sdl_RenderGetClipRect(+positive, -positive, -positive, -positive, -positive), [fct_name(gp_SDL_RenderGetClipRect)]).
+:- foreign(sdl_RenderSetClipRect(+positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderSetClipRect)]).
+
+
 %% ADDITIONS to "SDL" for your convenience!
 :- foreign(sdl_RenderDrawCircle(+positive, +integer, +integer, +positive), [fct_name(gp_SDL_RenderDrawCircle)]).
 :- foreign(sdl_RenderFillCircle(+positive, +integer, +integer, +positive), [fct_name(gp_SDL_RenderFillCircle)]).
@@ -44,8 +54,6 @@
 :- foreign(sdl_RenderCopy(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderCopyDefaults)]).
 :- foreign(sdl_RenderCopyEx_C(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +integer, +integer, +integer, +positive), [fct_name(gp_SDL_RenderCopyEx)]).
 :- foreign(sdl_QueryTexture(+positive, -positive, -positive, -positive, -positive), [fct_name(gp_SDL_QueryTexture)]).
-
-			    
 
 
 %% Event functions
@@ -88,6 +96,7 @@
 
 :- foreign(sdl_GetNumAudioDevices(+positive, -positive),  [fct_name(gp_SDL_GetNumAudioDevices)]).
 :- foreign(sdl_GetNumAudioDrivers(-positive),             [fct_name(gp_SDL_GetNumAudioDevices)]).
+:- foreign(sdl_GetAudioDeviceName(+positive, +positive, -codes), [fct_name(gp_SDL_GetAudioDeviceName)]).
 
 
 %% Thread functions
