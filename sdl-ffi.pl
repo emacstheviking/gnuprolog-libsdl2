@@ -60,6 +60,10 @@
 
 :- foreign(sdl_PollEvent(-term), [fct_name(gp_SDL_PollEvent)]).
 
+%% TODO: Going to need then when I do TIMER support...
+%%
+%% :- foreign(sdl_PushEvent(), [fct_name(gp_SDL_PushEvent)]).
+
 
 %% Text input functions
 
