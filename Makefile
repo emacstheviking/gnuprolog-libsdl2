@@ -25,3 +25,8 @@ clean:
 
 doc:
 	doxygen Doxyfile
+
+global:
+	make sdl_osx
+	sudo cp ./sdltest /opt/local/bin/gprolog
+
