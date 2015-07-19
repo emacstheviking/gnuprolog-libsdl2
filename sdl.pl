@@ -104,7 +104,7 @@ sdl_CreateRenderer(Wnd, Index, Flags, Renderer) :-
 	nonvar(Wnd),
 	integer(Index),
 	list(Flags),
-	sdl_make_flags(Flags, 'SDL_CreateWindow', Value),
+	sdl_make_flags(Flags, 'SDL_CreateRenderer', Value),
 	format("SDL.PL: gp_SDL_CreateRenderer_C(~w, ~w, ~w, Rndr).~n",
 	       [Wnd, Index, Value]),
 	sdl_CreateRenderer_C(Wnd, Index, Value, Renderer).
@@ -174,8 +174,8 @@ sdl_make_flags(Flags, FlagSet, Out) :-
 	sdl_constants(FlagSet, Lookup),
 	sdl_scan_flags(Flags, Lookup, 0, Out).
 
-sdl_make_flags(_,Where,_) :-
-	Error =.. [Where, 'Check flags list and provider atom'],
+sdl_make_flags(Flags, Where, _) :-
+	Error =.. [Where, 'Check flags list and provider atom', Flags],
 	throw(Error).
 
 

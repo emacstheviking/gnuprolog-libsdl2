@@ -53,9 +53,9 @@ const char* evWindowType(int);
  */
 PlBool gp_SDL_Init(PlLong flags)
 {
-  g_atomTextInput = Pl_Create_Atom("text_input");
+  g_atomTextInput   = Pl_Create_Atom("text_input");
   g_atomTextEditing = Pl_Create_Atom("text_editing");
-  g_atomDropFile = Pl_Create_Atom("dropfile");
+  g_atomDropFile    = Pl_Create_Atom("dropfile");
   g_atomDisplayMode = Pl_Create_Atom("display_mode");
 
   if (flags > 0) {
@@ -105,6 +105,11 @@ PlBool gp_SDL_CreateWindow(char*  title,
 
   if (wnd) {
     *handle = (PlLong)wnd;
+
+#ifdef __DEBUG__
+    fprintf(stdout, "gp_SDL_CreateWindow: ok: %p\n", wnd);
+#endif
+
     return PL_TRUE;
   }
   RETURN_SDL_FAIL(SDL_CreateWindow);
@@ -124,6 +129,27 @@ PlBool gp_SDL_CreateWindow(char*  title,
 PlBool gp_SDL_DestroyWindow(PlLong handle)
 {
   SDL_DestroyWindow((SDL_Window*)handle);
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_ShowWindow(PlLong handle)
+{
+  SDL_ShowWindow((SDL_Window*)handle);
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_HideWindow(PlLong handle)
+{
+  SDL_HideWindow((SDL_Window*)handle);
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RaiseWindow(PlLong handle)
+{
+  SDL_RaiseWindow((SDL_Window*)handle);
   return PL_TRUE;
 }
 
