@@ -13,6 +13,7 @@ int g_atomTextInput   = 0;
 int g_atomTextEditing = 0;
 int g_atomDropFile    = 0;
 int g_atomDisplayMode = 0;
+int g_atomUserEvent   = 0;
 
 
 #define EV(F) F(&ev, &szTerm[0])
@@ -36,6 +37,7 @@ EVWRAPPER(evMouseWheel);
 EVWRAPPER_TERM(evTextEditing);
 EVWRAPPER_TERM(evTextInput);
 EVWRAPPER_TERM(evDropEvent);
+EVWRAPPER_TERM(evUserEvent);
 
 // Maps event codes into strings for atom conversion
 const char* evWindowType(int);
@@ -57,6 +59,7 @@ PlBool gp_SDL_Init(PlLong flags)
   g_atomTextEditing = Pl_Create_Atom("text_editing");
   g_atomDropFile    = Pl_Create_Atom("dropfile");
   g_atomDisplayMode = Pl_Create_Atom("display_mode");
+  g_atomUserEvent   = Pl_Create_Atom("user_event");
 
   if (flags > 0) {
     if (0 == SDL_Init(flags)) {
@@ -385,6 +388,8 @@ PlBool gp_SDL_PollEvent(PlTerm *event)
 	case SDL_QUIT:             EVB(evQuit);
 	case SDL_DROPFILE:         EVB_TERM(evDropEvent);
 
+	case SDL_USEREVENT:        EVB_TERM(evUserEvent);
+
 	default:
 	  sprintf(szTerm, "unhandled(%u)", ev.type);
     }
@@ -412,20 +417,59 @@ PlBool gp_SDL_GetTicks(PlLong *ticks)
 }
 
 
-/**
- * SDL_Delay
- *
- * Delay the process for a number of milliseconds.
- *
- * @param  PlLong   the required delay
- *
- * @return PL_TRUE
- */
 PlBool gp_SDL_Delay(PlLong delay_in_milliseconds)
 {
   SDL_Delay(delay_in_milliseconds);
   return PL_TRUE;
 }
+
+
+PlBool gp_SDL_RemoveTimer(PlLong timer)
+{
+  if (SDL_RemoveTimer((SDL_TimerID)timer)) {
+    return PL_TRUE;
+  }
+  return PL_FALSE;
+}
+
+
+Uint32 timerCallback(Uint32 interval, void* param)
+{
+  SDL_Event event;
+
+  event.type       = SDL_USEREVENT;
+  event.user.code  = interval;
+  event.user.data1 = 0;
+  event.user.data2 = 0;
+
+  int status = SDL_PushEvent(&event);
+
+#ifdef __DEBUG__
+  switch(status) {
+      case 1: fprintf(stdout, "timer+user-event => pushed ok\n"); break;
+      case 0: fprintf(stdout, "timer+user-event => filtered!\n"); break;
+      default:
+	SHOW_SDL_FAIL(SDL_PushEvent);
+	break;
+  }
+#endif
+
+  // abort subsequent callbacks unless success
+  return (status < 0) ? 0 : interval;
+}
+
+
+PlBool gp_SDL_AddTimer(PlLong interval, PlLong *timerId)
+{
+  SDL_TimerID id = SDL_AddTimer(interval, timerCallback, NULL);
+
+  if (id) {
+    *timerId = (PlLong)id;
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_AddTimer);
+}
+
 
 
 /**
@@ -649,6 +693,24 @@ EVWRAPPER(evMouseWheel) {
 	  e->motion.which,
 	  e->motion.x,
 	  e->motion.y);
+}
+
+
+//--------------------------------------------------------------------
+// user_event( <timestamp>, <windowID>, <code>, <positive>, <positive>).
+//--------------------------------------------------------------------
+EVWRAPPER_TERM(evUserEvent)
+{
+  PlTerm args[] = {
+    Pl_Mk_Integer((PlLong)e->user.timestamp),
+    Pl_Mk_Integer((PlLong)e->user.windowID),
+    Pl_Mk_Integer(e->user.code),
+    Pl_Mk_Positive((PlLong)e->user.data1),
+    Pl_Mk_Positive((PlLong)e->user.data2)
+  };
+
+  *t = 0;
+  *o = Pl_Mk_Compound(g_atomUserEvent, 5, &args[0]);
 }
 
 

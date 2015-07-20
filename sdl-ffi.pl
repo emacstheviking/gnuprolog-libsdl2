@@ -84,6 +84,8 @@
 
 :- foreign(sdl_Delay(+positive),   [fct_name(gp_SDL_Delay)]).
 :- foreign(sdl_GetTicks(-integer), [fct_name(gp_SDL_GetTicks)]).
+:- foreign(sdl_RemoveTimer(+positive), [fct_name(gp_SDL_RemoveTimer)]).
+:- foreign(sdl_AddTimer(+positive, -positive), [fct_name(gp_SDL_AddTimer)]).
 :- foreign(sdl_ShowSimpleMessageBox_C(+positive, +codes, +codes, +integer), [fct_name(gp_SDL_ShowSimpleMessageBox_C)]).
 :- foreign(sdl_GetPlatform(-term), [fct_name(gp_SDL_GetPlatform)]).
 
