@@ -16,6 +16,9 @@
 :- foreign(sdl_DestroyWindow(+positive), [fct_name(gp_SDL_DestroyWindow)]).
 :- foreign(sdl_SetWindowTitle(+positive, +codes), [fct_name(gp_SDL_SetWindowTitle)]).
 :- foreign(sdl_SetWindowSize(+positive, +integer, +integer), [fct_name(gp_SDL_SetWindowSize)]).
+:- foreign(sdl_GetWindowSize(+positive, -integer, -integer), [fct_name(gp_SDL_GetWindowSize)]).
+:- foreign(sdl_SetWindowPosition(+positive, +integer, +integer), [fct_name(gp_SDL_SetWindowPosition)]).
+:- foreign(sdl_GetWindowPosition(+positive, -integer, -integer), [fct_name(gp_SDL_GetWindowPosition)]).
 :- foreign(sdl_ShowWindow(+positive), [fct_name(gp_SDL_ShowWindow)]).
 :- foreign(sdl_HideWindow(+positive), [fct_name(gp_SDL_HideWindow)]).
 :- foreign(sdl_RaiseWindow(+positive), [fct_name(gp_SDL_RaiseWindow)]).
@@ -111,6 +114,12 @@
 %% Thread functions
 
 :- foreign(sdl_CreateThread(+term, +codes, -positive), [fct_name(gp_SDL_CreateThread)]).
+
+
+%% Logging functions
+
+:- foreign(sdl_Log_C(+codes), [fct_name(gp_SDL_Log)]).
+:- foreign(sdl_LogMessage_C(+positive, +positive, +codes), [fct_name(gp_SDL_LogMessage)]).
 
 
 %%====================================================================

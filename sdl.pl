@@ -162,6 +162,30 @@ sdl_ShowSimpleMessageBox(Wnd, Title, Message, Mode) :-
 
 
 
+sdl_Log(Format) :-
+	sdl_Log(Format, []).
+
+sdl_Log(Format, Args) :-
+	list(Format),
+	list(Args),
+	format_to_codes(Str, Format, Args),
+	sdl_Log_C(Str).
+
+
+
+sdl_LogMessage(Category, Priority, Format) :-
+	sdl_LogMessage(Category, Priority, Format, []).
+
+sdl_LogMessage(Category, Priority, Format, Args) :-
+	list(Format),
+	list(Args),
+	atom(Category),
+	atom(Priority),
+	sdl_make_flags([Category], 'Log_Category', CatValue),
+	sdl_make_flags([Priority], 'Log_Category', PriValue),
+	format_to_codes(Str, Format, Args),
+	sdl_LogMessage_C(CatValue, PriValue, Str).
+
 
 %%--------------------------------------------------------------------
 %% sdl_make_flags/3 -- helper to compose bit flags into a single value

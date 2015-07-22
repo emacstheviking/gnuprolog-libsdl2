@@ -157,16 +157,6 @@ PlBool gp_SDL_RaiseWindow(PlLong handle)
 }
 
 
-/**
- * SDL_SetWindowTitle
- *
- * Use this function to set the title of a window.
- *
- * @param PlLong handle to a valid window
- * @param char*  title string to use
- *
- * @return PL_TRUE
- */
 PlBool gp_SDL_SetWindowTitle(PlLong wnd, char* title)
 {
     SDL_SetWindowTitle((SDL_Window*)wnd, title);
@@ -177,6 +167,33 @@ PlBool gp_SDL_SetWindowTitle(PlLong wnd, char* title)
 PlBool gp_SDL_SetWindowSize(PlLong wnd, PlLong width, PlLong height)
 {
   SDL_SetWindowSize((SDL_Window*)wnd, (int)width, (int)height);
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_GetWindowSize(PlLong wnd, PlLong *width, PlLong *height)
+{
+  int ww, wh;
+  SDL_GetWindowSize((SDL_Window*)wnd, &ww, &wh);
+  *width  = (PlLong)ww;
+  *height = (PlLong)wh;
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_SetWindowPosition(PlLong wnd, PlLong x, PlLong y)
+{
+  SDL_SetWindowPosition((SDL_Window*)wnd, (int)x, (int)y);
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_GetWindowPosition(PlLong wnd, PlLong *x, PlLong *y)
+{
+  int wx, wy;
+  SDL_GetWindowPosition((SDL_Window*)wnd, &wx, &wy);
+  *x = (PlLong)wx;
+  *y = (PlLong)wy;
   return PL_TRUE;
 }
 
@@ -514,6 +531,20 @@ PlBool gp_SDL_SetTextInputRect(PlLong x, PlLong y, PlLong w, PlLong h)
   rect.h = h;
 
   SDL_SetTextInputRect(&rect);
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_Log(char* text)
+{
+  SDL_Log("%s", text);
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_LogMessage(PlLong category, PlLong priority, char* text)
+{
+  SDL_LogMessage((int)category, (int)priority, "%s", text);
   return PL_TRUE;
 }
 

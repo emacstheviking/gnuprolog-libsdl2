@@ -95,3 +95,24 @@ sdl_constants('IMG_Init',
 	      , tif  - 0x00000004
 	      , webp - 0x00000008
 	      ]).
+
+sdl_constants('Log_Category',
+	      [ application - 0
+	      , error       - 1
+	      , assert      - 2
+	      , system      - 3
+	      , audio       - 4
+	      , video       - 5
+	      , render      - 6
+	      , input       - 7
+	      , test        - 8
+	      ]).
+
+sdl_constants('Log_Priority',
+	      [ verbose     - 1
+	      , debug       - 2
+	      , info        - 3
+	      , warn        - 4
+	      , error       - 5
+	      , critical    - 6
+	      ]).
