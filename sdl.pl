@@ -116,7 +116,7 @@ sdl_CreateWindowAndRenderer(Width, Height, Flags, Wnd, Rndr) :-
 	var(Wnd),
 	var(Rndr),
 	list(Flags), %% no vars in list! ? check!!
-	sdl_make_flags(Flags, 'SDL_CreateWindow', Value),
+	sdl_make_flags(Flags, 'SDL_GetWindowFlags', Value),
 	format("SDL.PL: gp_SDL_CreateWindowAndRenderer_C(~w, ~w, ~w, Wnd, Rndr).~n",
 	       [Width, Height, Value]),
 	sdl_CreateWindowAndRenderer_C(Width, Height, Value, Wnd, Rndr).

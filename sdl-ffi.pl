@@ -120,6 +120,7 @@
 
 :- foreign(sdl_Log_C(+codes), [fct_name(gp_SDL_Log)]).
 :- foreign(sdl_LogMessage_C(+positive, +positive, +codes), [fct_name(gp_SDL_LogMessage)]).
+:- foreign(sdl_LogToFile(+codes), [fct_name(gp_SDL_LogToFile)]).
 
 
 %%====================================================================

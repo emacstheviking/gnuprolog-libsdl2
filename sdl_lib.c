@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <unistd.h>
 
 #include <gprolog.h>
 #include <SDL.h>
@@ -15,6 +17,13 @@ int g_atomDropFile    = 0;
 int g_atomDisplayMode = 0;
 int g_atomUserEvent   = 0;
 
+
+// stderr for SDL_Log can be redirected to a file
+FILE* g_errFile  = NULL;
+FILE* g_oldStdErr;
+
+//typedef void (*SDL_LogOutputFunction)(void *userdata, int category, SDL_LogPriority priority, const char *message);
+	   
 
 #define EV(F) F(&ev, &szTerm[0])
 #define EVB(F) F(&ev, &szTerm[0]); break
@@ -531,6 +540,29 @@ PlBool gp_SDL_SetTextInputRect(PlLong x, PlLong y, PlLong w, PlLong h)
   rect.h = h;
 
   SDL_SetTextInputRect(&rect);
+  return PL_TRUE;
+}
+
+
+// pass "" to restore output to whatver is the default
+PlBool gp_SDL_LogToFile(char* filename)
+{
+  if (strlen(filename)) {
+    if (!g_errFile) {
+      g_oldStdErr = stderr;
+      g_errFile = freopen(filename, "a+", stderr);
+      if (NULL == g_errFile) {
+	fprintf(stderr, "Failed to redirect: %i\n", errno);
+	return PL_FALSE;
+      }
+    }
+  }
+  else {
+    fclose(stderr);
+    stderr = g_oldStdErr;
+    g_oldStdErr = NULL;
+    g_errFile = NULL;
+  }
   return PL_TRUE;
 }
 
