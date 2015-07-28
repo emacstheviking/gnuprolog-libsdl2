@@ -60,6 +60,12 @@
 :- foreign(sdl_RenderCopy(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderCopyDefaults)]).
 :- foreign(sdl_RenderCopyEx_C(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +integer, +integer, +integer, +positive), [fct_name(gp_SDL_RenderCopyEx)]).
 :- foreign(sdl_QueryTexture(+positive, -positive, -positive, -positive, -positive), [fct_name(gp_SDL_QueryTexture)]).
+:- foreign(sdl_GetTextureAlphaMod(+positive, -positive), [fct_name(gp_SDL_GetTextureAlphaMod)]).
+:- foreign(sdl_SetTextureAlphaMod(+positive, +positive), [fct_name(gp_SDL_SetTextureAlphaMod)]).
+:- foreign(sdl_GetTextureBlendMode(+positive, -atom), [fct_name(gp_SDL_GetTextureBlendMode)]).
+:- foreign(sdl_SetTextureBlendMode(+positive, +string), [fct_name(gp_SDL_SetTextureBlendMode)]).
+:- foreign(sdl_GetTextureColorMod(+positive, -positive, -positive, -positive), [fct_name(gp_SDL_GetTextureColorMod)]).
+:- foreign(sdl_SetTextureColorMod(+positive, +positive, +positive, +positive), [fct_name(gp_SDL_SetTextureColorMod)]).
 
 
 %% Event functions

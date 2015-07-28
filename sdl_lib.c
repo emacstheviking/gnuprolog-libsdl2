@@ -11,11 +11,15 @@
 
 
 // These are created during SDL_Init to avoid repetition
-int g_atomTextInput   = 0;
-int g_atomTextEditing = 0;
-int g_atomDropFile    = 0;
-int g_atomDisplayMode = 0;
-int g_atomUserEvent   = 0;
+int g_atomTextInput      = 0;
+int g_atomTextEditing    = 0;
+int g_atomDropFile       = 0;
+int g_atomDisplayMode    = 0;
+int g_atomUserEvent      = 0;
+int g_atomBlendModeNone  = 0;
+int g_atomBlendModeBlend = 0;
+int g_atomBlendModeAdd   = 0;
+int g_atomBlendModeMod   = 0;
 
 
 // stderr for SDL_Log can be redirected to a file
@@ -64,12 +68,18 @@ const char* evWindowType(int);
  */
 PlBool gp_SDL_Init(PlLong flags)
 {
+  // input event types
   g_atomTextInput   = Pl_Create_Atom("text_input");
   g_atomTextEditing = Pl_Create_Atom("text_editing");
   g_atomDropFile    = Pl_Create_Atom("dropfile");
   g_atomDisplayMode = Pl_Create_Atom("display_mode");
   g_atomUserEvent   = Pl_Create_Atom("user_event");
-
+  // texture blending modes
+  g_atomBlendModeNone  = Pl_Create_Atom("none");
+  g_atomBlendModeBlend = Pl_Create_Atom("blend");
+  g_atomBlendModeAdd   = Pl_Create_Atom("add");
+  g_atomBlendModeMod   = Pl_Create_Atom("mod");
+  
   if (flags > 0) {
     if (0 == SDL_Init(flags)) {
       return PL_TRUE;
@@ -1021,6 +1031,86 @@ PlBool gp_SDL_QueryTexture(
   *width  = (PlLong)w;
   *height = (PlLong)h;
   return PL_TRUE;
+}
+
+
+PlBool gp_SDL_GetTextureAlphaMod(PlLong texture, PlLong *alpha)
+{
+  Uint8 al;
+
+  if (0 == SDL_GetTextureAlphaMod((SDL_Texture*)texture, &al)) {
+    *alpha = (PlLong)al;
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_GetTextureAlphaMod);
+}
+
+
+PlBool gp_SDL_SetTextureAlphaMod(PlLong texture, PlLong alpha)
+{
+  if (0 == SDL_SetTextureAlphaMod((SDL_Texture*)texture, (Uint8)alpha)) {
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_SetTextureAlphaMod);
+}
+
+
+PlBool gp_SDL_GetTextureBlendMode(PlLong texture, PlTerm *mode)
+{
+  SDL_BlendMode bmode;
+  
+  if (0 == SDL_GetTextureBlendMode((SDL_Texture*)texture, &bmode)) {
+    switch(bmode) {
+	case SDL_BLENDMODE_NONE:  *mode = g_atomBlendModeNone;  break;
+	case SDL_BLENDMODE_BLEND: *mode = g_atomBlendModeBlend; break;
+	case SDL_BLENDMODE_ADD:   *mode = g_atomBlendModeAdd;   break;
+	case SDL_BLENDMODE_MOD:   *mode = g_atomBlendModeMod;   break;
+    }
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_GetTextureBlendMode);
+}
+
+
+PlBool gp_SDL_SetTextureBlendMode(PlLong texture, char* mode)
+{
+  SDL_BlendMode bmode  = SDL_BLENDMODE_NONE;
+  if (!strcpy("blend", mode)) {
+    bmode = SDL_BLENDMODE_BLEND;
+  }
+  else if (!strcpy("add", mode)) {
+    bmode = SDL_BLENDMODE_ADD;
+  }
+  else if (!strcpy("mod", mode)) {
+    bmode = SDL_BLENDMODE_MOD;
+  }
+  
+  if (0 == SDL_SetTextureBlendMode((SDL_Texture*)texture, (SDL_BlendMode)mode)) {
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_SetTextureBlendMode);
+}
+
+
+PlBool gp_SDL_GetTextureColorMod(PlLong texture, PlLong *red, PlLong *grn, PlLong *blu)
+{
+  Uint8 r, g, b;
+  if (0 == SDL_GetTextureColorMod((SDL_Texture*)texture, &r, &g, &b)) {
+    *red = (PlLong)r;
+    *grn = (PlLong)g;
+    *blu = (PlLong)b;
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_GetTextureColorMod);
+}
+
+
+PlBool gp_SDL_SetTextureColorMod(PlLong texture, PlLong red, PlLong grn, PlLong blu)
+{
+  if (0 == SDL_SetTextureColorMod((SDL_Texture*)texture, (Uint8)red, (Uint8)grn, (Uint8)blu)) {
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_SetTextureColorMod);
 }
 
 
