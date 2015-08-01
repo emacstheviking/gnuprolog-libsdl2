@@ -89,6 +89,13 @@
 :- foreign(sdl_LoadBMP(+codes, -positive),  [fct_name(gp_SDL_LoadBMP)]).
 
 
+%% Clipboard handling
+
+:- foreign(sdl_GetClipboardText(-term),  [fct_name(gp_SDL_GetClipboardText)]).
+:- foreign(sdl_SetClipboardText(+codes), [fct_name(gp_SDL_SetClipboardText)]).
+:- foreign(sdl_HasClipboardText,         [fct_name(gp_SDL_HasClipboardText)]).
+
+
 %% General functions
 
 :- foreign(sdl_Delay(+positive),   [fct_name(gp_SDL_Delay)]).
@@ -113,8 +120,9 @@
 %% Audio functions
 
 :- foreign(sdl_GetNumAudioDevices(+positive, -positive),  [fct_name(gp_SDL_GetNumAudioDevices)]).
-:- foreign(sdl_GetNumAudioDrivers(-positive),             [fct_name(gp_SDL_GetNumAudioDevices)]).
-:- foreign(sdl_GetAudioDeviceName(+positive, +positive, -codes), [fct_name(gp_SDL_GetAudioDeviceName)]).
+:- foreign(sdl_GetAudioDeviceName(+positive, +positive, -term), [fct_name(gp_SDL_GetAudioDeviceName)]).
+:- foreign(sdl_GetNumAudioDrivers(-positive),             [fct_name(gp_SDL_GetNumAudioDrivers)]).
+:- foreign(sdl_GetAudioDriver(+positive, -atom),          [fct_name(gp_SDL_GetAudioDriver)]).
 
 
 %% Thread functions
@@ -205,7 +213,6 @@
 %%                    SDL_mixer  (Audio)
 %%
 %%====================================================================
-
 :-foreign(img_Linked_Version(-positive, -positive, -positive), [fct_name(gp_IMG_Linked_Version)]).
 :-foreign(img_Init_C(+positive, -positive), [fct_name(gp_IMG_Init)]).
 :-foreign(img_Quit, [fct_name(gp_IMG_Quit)]).

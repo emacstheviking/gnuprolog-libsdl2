@@ -11,6 +11,7 @@
 
 
 // These are created during SDL_Init to avoid repetition
+int g_atomEmptyList      = 0;
 int g_atomTextInput      = 0;
 int g_atomTextEditing    = 0;
 int g_atomDropFile       = 0;
@@ -68,6 +69,7 @@ const char* evWindowType(int);
  */
 PlBool gp_SDL_Init(PlLong flags)
 {
+  g_atomEmptyList = Pl_Create_Atom("[]");
   // input event types
   g_atomTextInput   = Pl_Create_Atom("text_input");
   g_atomTextEditing = Pl_Create_Atom("text_editing");
@@ -1222,6 +1224,43 @@ PlBool gp_SDL_GetWindowFlags(PlLong window, PlLong * flags)
 
 //--------------------------------------------------------------------
 //
+//                    Clipboard functions
+//
+//--------------------------------------------------------------------
+PlBool gp_SDL_GetClipboardText(PlTerm *text)
+{
+  char* cbtext = SDL_GetClipboardText();
+
+  if (NULL != cbtext) {
+    *text = Pl_Mk_Codes((const char*)cbtext);
+  }
+  else {
+    *text = g_atomEmptyList;
+  }
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_SetClipboardText(char* cbtext)
+{
+  if (0 == SDL_SetClipboardText((const char*)cbtext)) {
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_SetClipboardText);
+}
+
+
+PlBool gp_SDL_HasClipboardText()
+{
+  if (SDL_HasClipboardText()) {
+    return PL_TRUE;
+  }
+  return PL_FALSE;
+}
+
+
+//--------------------------------------------------------------------
+//
 //                    Audio functions
 //
 //--------------------------------------------------------------------
@@ -1239,7 +1278,19 @@ PlBool gp_SDL_GetNumAudioDrivers(PlLong *count)
 }
 
 
-PlBool gp_SDL_GetAudioDeviceName(PlLong index, PlLong iscapture, PlLong *name)
+PlBool gp_SDL_GetAudioDriver(PlLong index, PlTerm *name)
+{
+  const char* driver = SDL_GetAudioDriver((int)index);
+
+  if (NULL != driver) {
+    *name = Pl_Create_Atom(driver);
+    return PL_TRUE;
+  }
+  RETURN_SDL_FAIL(SDL_GetAudioDriver);
+}
+
+
+PlBool gp_SDL_GetAudioDeviceName(PlLong index, PlLong iscapture, PlTerm *name)
 {
   const char *device = SDL_GetAudioDeviceName((int)index, (int)iscapture);
 
