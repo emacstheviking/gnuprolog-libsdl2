@@ -96,6 +96,12 @@
 :- foreign(sdl_HasClipboardText,         [fct_name(gp_SDL_HasClipboardText)]).
 
 
+%% Gesture recognition functions
+
+:- foreign(sdl_GetNumTouchDevices(-integer), [fct_name(gp_SDL_GetNumTouchDevices)]).
+:- foreign(sdl_RecordGesture(+integer), [fct_name(gp_SDL_RecordGesture)]).
+
+
 %% General functions
 
 :- foreign(sdl_Delay(+positive),   [fct_name(gp_SDL_Delay)]).

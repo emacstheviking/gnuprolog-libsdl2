@@ -21,7 +21,8 @@ int g_atomBlendModeNone  = 0;
 int g_atomBlendModeBlend = 0;
 int g_atomBlendModeAdd   = 0;
 int g_atomBlendModeMod   = 0;
-
+int g_atomDollarRecord   = 0;
+int g_atomDollarGesture  = 0;
 
 // stderr for SDL_Log can be redirected to a file
 FILE* g_errFile  = NULL;
@@ -52,6 +53,7 @@ EVWRAPPER_TERM(evTextEditing);
 EVWRAPPER_TERM(evTextInput);
 EVWRAPPER_TERM(evDropEvent);
 EVWRAPPER_TERM(evUserEvent);
+EVWRAPPER_TERM(evDollarEvent);
 
 // Maps event codes into strings for atom conversion
 const char* evWindowType(int);
@@ -70,19 +72,24 @@ const char* evButtonName(Uint32);
  */
 PlBool gp_SDL_Init(PlLong flags)
 {
-  g_atomEmptyList = Pl_Create_Atom("[]");
   // input event types
-  g_atomTextInput   = Pl_Create_Atom("text_input");
-  g_atomTextEditing = Pl_Create_Atom("text_editing");
-  g_atomDropFile    = Pl_Create_Atom("dropfile");
-  g_atomDisplayMode = Pl_Create_Atom("display_mode");
-  g_atomUserEvent   = Pl_Create_Atom("user_event");
+  g_atomTextInput      = Pl_Create_Atom("text_input");
+  g_atomTextEditing    = Pl_Create_Atom("text_editing");
+  g_atomDropFile       = Pl_Create_Atom("dropfile");
+  g_atomDisplayMode    = Pl_Create_Atom("display_mode");
+  g_atomUserEvent      = Pl_Create_Atom("user_event");
   // texture blending modes
   g_atomBlendModeNone  = Pl_Create_Atom("none");
   g_atomBlendModeBlend = Pl_Create_Atom("blend");
   g_atomBlendModeAdd   = Pl_Create_Atom("add");
   g_atomBlendModeMod   = Pl_Create_Atom("mod");
-  
+  // gesture events
+  g_atomDollarRecord   = Pl_Create_Atom("dollar_record");
+  g_atomDollarGesture  = Pl_Create_Atom("dollar_gesture");
+  // generic
+  g_atomEmptyList      = Pl_Create_Atom("[]");
+
+
   if (flags > 0) {
     if (0 == SDL_Init(flags)) {
       return PL_TRUE;
@@ -423,6 +430,9 @@ PlBool gp_SDL_PollEvent(PlTerm *event)
 
 	case SDL_TEXTEDITING:      EVB_TERM(evTextEditing);
 	case SDL_TEXTINPUT:        EVB_TERM(evTextInput);
+
+	case SDL_DOLLARGESTURE:
+	case SDL_DOLLARRECORD:     EVB_TERM(evDollarEvent);
 
 	case SDL_QUIT:             EVB(evQuit);
 	case SDL_DROPFILE:         EVB_TERM(evDropEvent);
@@ -791,6 +801,34 @@ EVWRAPPER_TERM(evUserEvent)
 
 
 //--------------------------------------------------------------------
+// dollar_gesture/event( <timestamp>, <windowID>, <code>, <positive>, <positive>).
+//--------------------------------------------------------------------
+EVWRAPPER_TERM(evDollarEvent)
+{
+  int dollarEventType = (e->type == SDL_DOLLARGESTURE)
+    ? g_atomDollarGesture
+    : g_atomDollarRecord;
+
+#ifdef __DEBUG__
+  fprintf(stdout, "DOLLARx: type: %i\n", e->type);
+#endif
+  
+  PlTerm args[] = {
+    Pl_Mk_Integer((PlLong)e->dgesture.timestamp),
+    Pl_Mk_Integer((PlLong)e->dgesture.touchId),
+    Pl_Mk_Integer((PlLong)e->dgesture.gestureId),
+    Pl_Mk_Positive((PlLong)e->dgesture.numFingers),
+    Pl_Mk_Float((double)e->dgesture.error),
+    Pl_Mk_Float((double)e->dgesture.x),
+    Pl_Mk_Float((double)e->dgesture.y)
+  };
+
+  *t = 0;
+  *o = Pl_Mk_Compound(dollarEventType, 7, &args[0]);
+}
+
+
+//--------------------------------------------------------------------
 // Window Event -> Descriptive String for functor use.
 //--------------------------------------------------------------------
 const char* evWindowType(int id) {
@@ -836,7 +874,6 @@ const char* evButtonName(Uint32 id) {
 //
 //
 //--------------------------------------------------------------------
-
 /**
  * Pseudo-SDL: SDL_RenderDrawCircle
  *
@@ -1270,6 +1307,32 @@ PlBool gp_SDL_HasClipboardText()
     return PL_TRUE;
   }
   return PL_FALSE;
+}
+
+
+//--------------------------------------------------------------------
+//
+//      Touch devices & Gesture (DOLLAR) recognition functions
+//
+//--------------------------------------------------------------------
+PlBool gp_SDL_GetNumTouchDevices(PlLong *count)
+{
+  *count = (PlLong)SDL_GetNumTouchDevices();
+  return PL_TRUE;
+}
+
+
+PlBool gp_SDL_RecordGesture(PlLong touchId)
+{
+  int result = SDL_RecordGesture(-1);
+  fprintf(stdout, "SDL_RecordGesture result: %i\n", result);
+
+  if (result < 0) {
+    fprintf(stdout, "Failed to start gesture recording :(\n");
+    RETURN_SDL_FAIL(SDL_RecordGesture);
+  }
+
+  return PL_TRUE;
 }
 
 
