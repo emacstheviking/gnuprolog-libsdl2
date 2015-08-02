@@ -55,6 +55,7 @@ EVWRAPPER_TERM(evUserEvent);
 
 // Maps event codes into strings for atom conversion
 const char* evWindowType(int);
+const char* evButtonName(Uint32);
 
 
 
@@ -713,12 +714,12 @@ EVWRAPPER_TERM(evDropEvent)
 EVWRAPPER(evMouseButton)
 {
   sprintf(t,
-	  "%s(%u,%u,%u,%i,%s,%i,%i,%i)",
+	  "%s(%u,%u,%i,%s,%s,%i,%i,%i)",
 	  e->type == SDL_MOUSEBUTTONDOWN ? "mouse_down" : "mouse_up",
 	  e->button.timestamp,
 	  e->button.windowID,
 	  e->button.which,
-	  e->button.button,
+	  evButtonName(e->button.button),
 	  e->button.state == SDL_PRESSED ? "pressed" : "released",
 	  e->button.clicks,
 	  e->button.x,
@@ -808,6 +809,19 @@ const char* evWindowType(int id) {
       case SDL_WINDOWEVENT_FOCUS_GAINED: return "focus_gained";
       case SDL_WINDOWEVENT_FOCUS_LOST: return "focus_lost";
       case SDL_WINDOWEVENT_CLOSE: return "close";
+      default: return "unknown";
+  }
+}
+//--------------------------------------------------------------------
+// Mouse Event -> Descriptive button name for functor use.
+//--------------------------------------------------------------------
+const char* evButtonName(Uint32 id) {
+  switch(id) {
+      case SDL_BUTTON_LEFT: return "left";
+      case SDL_BUTTON_MIDDLE: return "middle";
+      case SDL_BUTTON_RIGHT: return "right";
+      case SDL_BUTTON_X1: return "x1";
+      case SDL_BUTTON_X2: return "x2";
       default: return "unknown";
   }
 }
