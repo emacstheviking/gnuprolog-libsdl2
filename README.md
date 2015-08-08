@@ -1,4 +1,3 @@
-
 # GNU Prolog / SDL2
 
 Love Prolog, love graphics? Well this is for you!
@@ -48,8 +47,8 @@ or directory, blah blah.
 
 Whatever.
 
-I changed ssome "Setup" optoions and it seemed to work and has done
-ever since. Perhaps I was just lucky. The settings I had to tweak were
+I changed some "Setup" options and it seemed to work and has done ever
+since. Perhaps I was just lucky. The settings I had to tweak were
 accessed from the "Setup" button on the right hand side of the
 "qjackclt" application UI, then on the main Settings tab:
 
@@ -61,3 +60,28 @@ accessed from the "Setup" button on the right hand side of the
   - Timeout (msec) is 500
   - Interface is (default)
   - Audio is Duplex
+
+
+# Ubuntu 14.04 Installation
+
+I did this to make sure I had everything and the kitchen sink:
+
+    sudo apt-get install libsdl2-2.0-0 libsdl2-image-2.0.0 libsdl2-mixer-2.0.0 libsdl2-ttf-2.0.0
+    sudo apt-get install libsdl2-dev
+    sudo apt-get install libsdl2-ttf-dev
+    sudo apt-get install libsdl2-mixer-dev
+    sudo apt-get install libsdl2-img-dev
+    sudo apt-get install libsdl2-image-dev
+
+After that all you do is run the target:
+
+    make sdl_ubuntu
+
+Which, if the libraries are as indicated in the Makefile, should have
+produced a binary called sdltest in the current folder.
+
+
+# And so...
+
+I continue to work on it, if you want to help, great.
+
