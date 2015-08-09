@@ -66,7 +66,7 @@ accessed from the "Setup" button on the right hand side of the
 
 I did this to make sure I had everything and the kitchen sink:
 
-    sudo apt-get install libsdl2-2.0-0 libsdl2-image-2.0.0 libsdl2-mixer-2.0.0 libsdl2-ttf-2.0.0
+    sudo apt-get install libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-mixer-2.0-0 libsdl2-ttf-2.0-0
     sudo apt-get install libsdl2-dev
     sudo apt-get install libsdl2-ttf-dev
     sudo apt-get install libsdl2-mixer-dev
