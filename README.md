@@ -8,6 +8,14 @@ system. And quite stable too. It has one of the best FFI systems I've
 ever seen and not only that, it can produce standalone native
 executables with "gplc" as well. How much more could you want?
 
+# LICENCE
+
+Licenced under GPL, read the LICENCE file for the full details.
+Also, I ask that you tell me what you use the code for and please
+don't write software that hurts people with it. That's bad karma
+that nobody needs. Other than that, it's yours I guess.
+
+
 # OS X  Installation
 
 I initially used "mac ports' version os the packages, that had
