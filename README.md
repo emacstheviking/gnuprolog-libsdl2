@@ -24,7 +24,7 @@ issues. In the end I remembered that you can use OS X Framework
 packages from the command line from way back, so I downloaded the
 various SDL and project .DMG files to my iMac, installed them into the
 /Library/Frameworks folder as instructed and then after some trila and
-errir I ended up with this command, which is now safely tucked away in
+error I ended up with this command, which is now safely tucked away in
 the Makefile:
 
 	gplc \
