@@ -156,6 +156,7 @@ void renderFont(SDL_Renderer* r, SDL_Surface* pText, int x, int y)
       if(SDL_RenderCopy(r, tex, NULL, &dstRect)) {
 	SHOW_TTF_FAIL(TTF_RenderUTF8_Solid);
       }
+	  SDL_DestroyTexture(tex);
     }
     else {
       SHOW_TTF_FAIL(SDL_CreateTextureFromSurface);
