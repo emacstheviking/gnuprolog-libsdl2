@@ -1,3 +1,6 @@
+
+# Changes by g0zar since c29d2cf853234818bf63d3e513469c1f7c95919d
+
 .PHONY: tags
 
 .DEFAULT_GOAL := default

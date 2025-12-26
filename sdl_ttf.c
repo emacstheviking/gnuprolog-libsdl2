@@ -136,6 +136,8 @@ PlBool gp_TTF_SizeUTF8(PlTerm font, char* text, PlLong *width, PlLong *height)
 }
 
 
+// Changes by g0zar since f0632cade74738a015695a7214574ef146d5750e
+
 /**
  * Renders a texture containing a rendered font incarnation to the
  * specified (x,y) location in the output.
