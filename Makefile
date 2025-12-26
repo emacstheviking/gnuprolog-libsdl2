@@ -1,6 +1,9 @@
 .PHONY: tags
 
-.DEFAULT_GOAL := sdl_osx
+.DEFAULT_GOAL := default
+
+default: sdl_ubuntu
+	cp ./sdltest ~/.local/bin/gprolog-sdl2
 
 tags:
 	rm -f TAGS
@@ -18,7 +21,8 @@ sdl_ubuntu:
 	-L -lSDL2 \
 	-L -lSDL2_ttf \
 	-L -lSDL2_image \
-	-L -lSDL2_mixer
+	-L -lSDL2_mixer \
+	--new-top-level
 
 sdl_osx:
 	gplc \
@@ -37,7 +41,4 @@ clean:
 doc:
 	doxygen Doxyfile
 
-global:
-	make sdl_osx
-	sudo cp ./sdltest /opt/local/bin/gprolog
 
