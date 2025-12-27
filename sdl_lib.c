@@ -8,6 +8,7 @@
 #include <SDL.h>
 
 #include "sdllib_common.h"
+#undef __DEBUG__
 
 
 // These are created during SDL_Init to avoid repetition
@@ -407,6 +408,9 @@ PlBool gp_SDL_DestroyTexture(PlLong texture)
 }
 
 
+//TODO: make a function that returns a list
+//of all the gathered events in C, so that we
+//dont get needless marshaling between prolog and C
 PlBool gp_SDL_PollEvent(PlTerm *event)
 {
   SDL_Event ev;
@@ -440,7 +444,8 @@ PlBool gp_SDL_PollEvent(PlTerm *event)
 	case SDL_USEREVENT:        EVB_TERM(evUserEvent);
 
 	default:
-	  sprintf(szTerm, "unhandled(%u)", ev.type);
+	  //sprintf(szTerm, "unhandled(%u)", ev.type);
+	  szTerm[0] = (char)0;
     }
 
     // Only copy the term if the term string was written to

@@ -1,3 +1,4 @@
+%% : vim : set ft=prolog
 %%====================================================================
 %%
 %%                            FFI DEFINITIONS
@@ -57,7 +58,7 @@
 :- foreign(sdl_DestroyTexture(+positive), [fct_name(gp_SDL_DestroyTexture)]).
 :- foreign(sdl_FreeSurface(+positive), [fct_name(gp_SDL_FreeSurface)]).
 :- foreign(sdl_RenderCopyDefaults(+positive, +positive), [fct_name(gp_SDL_RenderCopyDefaults)]).
-:- foreign(sdl_RenderCopy(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderCopyDefaults)]).
+:- foreign(sdl_RenderCopy(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderCopy)]).
 :- foreign(sdl_RenderCopyEx_C(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +integer, +integer, +integer, +positive), [fct_name(gp_SDL_RenderCopyEx)]).
 :- foreign(sdl_QueryTexture(+positive, -positive, -positive, -positive, -positive), [fct_name(gp_SDL_QueryTexture)]).
 :- foreign(sdl_GetTextureAlphaMod(+positive, -positive), [fct_name(gp_SDL_GetTextureAlphaMod)]).

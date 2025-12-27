@@ -17,6 +17,7 @@ tags:
 
 sdl_ubuntu:
 	gplc \
+		-C -U__DEBUG__ \
 	-C -I/usr/include/SDL2 \
 	-L -L/usr/lib/x86_64-linux-gnu \
 	-o sdltest \
