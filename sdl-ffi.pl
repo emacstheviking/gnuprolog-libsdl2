@@ -76,6 +76,8 @@
 :- foreign(sdl_FlushEvent_C(+positive), [fct_name(gp_SDL_FlushEvent)]).
 :- foreign(sdl_PumpEvents, [fct_name(gp_SDL_PumpEvents)]).
 :- foreign(sdl_EventState(+positive, +positive), [fct_name(gp_SDL_EventState)]).
+:- foreign(sdl_GatherAllEvents(term), [fct_name(gp_SDL_GatherAllEvents)]).
+
 
 %% TODO: Going to need then when I do TIMER support...
 %%
