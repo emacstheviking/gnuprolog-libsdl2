@@ -1071,6 +1071,29 @@ PlBool gp_SDL_RenderCopyEx(
   return PL_TRUE;
 }
 
+PlBool gp_SDL_FlushEvents(PlLong mintype, PlLong maxtype)
+{
+	SDL_FlushEvents((uint32_t) mintype, (uint32_t) maxtype);
+	return PL_TRUE;
+}
+
+PlBool gp_SDL_FlushEvent(PlLong type)
+{
+	SDL_FlushEvent((uint32_t) type);
+	return PL_TRUE;
+}
+
+PlBool gp_SDL_PumpEvents(void)
+{
+	SDL_PumpEvents();
+	return PL_TRUE;
+}
+
+PlBool gp_SDL_EventState(PlLong type, PlLong state)
+{
+	SDL_EventState((uint32_t) type, (int) state);
+	return PL_TRUE;
+}
 
 PlBool gp_SDL_QueryTexture(
     SDL_Texture *texture,

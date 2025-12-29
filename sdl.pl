@@ -162,6 +162,19 @@ sdl_ShowSimpleMessageBox(Wnd, Title, Message, Mode) :-
 	sdl_ShowSimpleMessageBox_C(Wnd, Title, Message, Value).
 
 
+sdl_FlushEvent(Type):-
+	atom(Type),
+	sdl_make_flags([Type], 'SDL_EventType', Value),
+	write('here 2'), nl,
+	sdl_FlushEvent_C(Value).
+
+sdl_FlushEvents(Mintype, Maxtype):-
+	atom(Mintype), atom(Maxtype),
+	sdl_make_flags([Mintype], 'SDL_EventType', Minval),
+	sdl_make_flags([Maxtype], 'SDL_EventType', Maxval),
+	write('here'),nl,
+	sdl_FlushEvents_C(Minval, Maxval).
+
 
 sdl_Log(Format) :-
 	sdl_Log(Format, []).
