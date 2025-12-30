@@ -162,14 +162,20 @@
 
 %% Only going to support UTF-8 encoded text...
 
-:- foreign(ttf_RenderUTF8_Solid(+positive, +positive, +positive, +positive, +codes),
+:- foreign(ttf_RenderUTF8_Solid_White(+positive, +positive, +positive, +positive, +codes),
+	   [fct_name(gp_TTF_RenderUTF8_Solid_White)]).
+
+:- foreign(ttf_RenderUTF8_Solid(+positive, +positive, +positive, +positive, +codes, +positive, +positive, +positive, +positive),
 	   [fct_name(gp_TTF_RenderUTF8_Solid)]).
 
-:- foreign(ttf_RenderUTF8_Shaded(+positive, +positive, +positive, +positive, +codes),
-	   [fct_name(gp_TTF_RenderUTF8_Shaded)]).
+:- foreign(ttf_RenderUTF8_Solid_Wrapped(+positive, +positive, +positive, +positive, +codes, +positive, +positive, +positive, +positive, +positive),
+	   [fct_name(gp_TTF_RenderUTF8_Solid_Wrapped)]).
 
-:- foreign(ttf_RenderUTF8_Blended(+positive, +positive, +positive, +positive, +codes),
-	   [fct_name(gp_TTF_RenderUTF8_Blended)]).
+:- foreign(ttf_RenderUTF8_Shaded_White(+positive, +positive, +positive, +positive, +codes),
+	   [fct_name(gp_TTF_RenderUTF8_Shaded_White)]).
+
+:- foreign(ttf_RenderUTF8_Blended_White(+positive, +positive, +positive, +positive, +codes),
+	   [fct_name(gp_TTF_RenderUTF8_Blended_White)]).
 
 :- foreign(ttf_SizeUTF8(+positive, +codes, -positive, -positive),
 	   [fct_name(gp_TTF_SizeUTF8)]).
