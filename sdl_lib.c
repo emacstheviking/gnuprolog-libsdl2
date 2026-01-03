@@ -408,10 +408,6 @@ PlBool gp_SDL_DestroyTexture(PlLong texture)
 }
 
 
-//TODO: make a function that returns a list
-//of all the gathered events in C, so that we
-//dont get needless marshaling between prolog and C
-
 #define __max_output_list 256
 
 PlBool gp_SDL_GatherAllEvents(PlTerm output)
