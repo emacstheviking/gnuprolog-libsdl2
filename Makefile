@@ -1,6 +1,12 @@
+
+# Changes by g0zar since c29d2cf853234818bf63d3e513469c1f7c95919d
+
 .PHONY: tags
 
-.DEFAULT_GOAL := sdl_osx
+.DEFAULT_GOAL := default
+
+default: sdl_ubuntu
+	cp ./sdltest ~/.local/bin/gprolog-sdl2
 
 tags:
 	rm -f TAGS
@@ -11,6 +17,7 @@ tags:
 
 sdl_ubuntu:
 	gplc \
+		-C -U__DEBUG__ \
 	-C -I/usr/include/SDL2 \
 	-L -L/usr/lib/x86_64-linux-gnu \
 	-o sdltest \
@@ -18,7 +25,8 @@ sdl_ubuntu:
 	-L -lSDL2 \
 	-L -lSDL2_ttf \
 	-L -lSDL2_image \
-	-L -lSDL2_mixer
+	-L -lSDL2_mixer \
+	--new-top-level
 
 sdl_osx:
 	gplc \
@@ -37,7 +45,4 @@ clean:
 doc:
 	doxygen Doxyfile
 
-global:
-	make sdl_osx
-	sudo cp ./sdltest /opt/local/bin/gprolog
 

@@ -66,7 +66,7 @@ PlBool gp_TTF_CloseFont(PlLong font)
 }
 
 
-PlBool gp_TTF_RenderUTF8_Solid(PlTerm rndr, PlTerm font, PlLong x, PlLong y, char* text)
+PlBool gp_TTF_RenderUTF8_Solid_White(PlTerm rndr, PlTerm font, PlLong x, PlLong y, char* text)
 {
   SDL_Color color = {255, 255, 255, 255};
 
@@ -82,8 +82,32 @@ PlBool gp_TTF_RenderUTF8_Solid(PlTerm rndr, PlTerm font, PlLong x, PlLong y, cha
   return PL_TRUE;
 }
 
+PlBool gp_TTF_RenderUTF8_Solid(PlTerm rndr, PlTerm font, PlLong x, PlLong y, char* text, int r, int g, int b, int a)
+{
+  SDL_Color color = {r,g,b,a};
 
-PlBool gp_TTF_RenderUTF8_Blended(PlTerm rndr, PlTerm font, PlLong x, PlLong y, char* text)
+  renderFont(
+      (SDL_Renderer*)rndr,
+      TTF_RenderUTF8_Solid((TTF_Font*)font, text, color),
+      (int)x, (int)y);
+
+  return PL_TRUE;
+}
+
+PlBool gp_TTF_RenderUTF8_Solid_Wrapped(PlTerm rndr, PlTerm font, PlLong x, PlLong y, char* text, int r, int g, int b, int a, int wraplen)
+{
+  SDL_Color color = {r,g,b,a};
+
+  renderFont(
+      (SDL_Renderer*)rndr,
+      TTF_RenderUTF8_Solid_Wrapped((TTF_Font*)font, text, color, wraplen),
+      (int)x, (int)y);
+
+  return PL_TRUE;
+}
+
+
+PlBool gp_TTF_RenderUTF8_Blended_White(PlTerm rndr, PlTerm font, PlLong x, PlLong y, char* text)
 {
   SDL_Color color = {255, 255, 255, 255};
 
@@ -100,7 +124,7 @@ PlBool gp_TTF_RenderUTF8_Blended(PlTerm rndr, PlTerm font, PlLong x, PlLong y, c
 }
 
 
-PlBool gp_TTF_RenderUTF8_Shaded(PlTerm rndr, PlTerm font, PlLong x, PlLong y, char* text)
+PlBool gp_TTF_RenderUTF8_Shaded_White(PlTerm rndr, PlTerm font, PlLong x, PlLong y, char* text)
 {
   SDL_Color color  = {255, 255, 255, 255};
   SDL_Color black  = {0, 0, 0, 255};
@@ -136,6 +160,8 @@ PlBool gp_TTF_SizeUTF8(PlTerm font, char* text, PlLong *width, PlLong *height)
 }
 
 
+// Changes by g0zar since f0632cade74738a015695a7214574ef146d5750e
+
 /**
  * Renders a texture containing a rendered font incarnation to the
  * specified (x,y) location in the output.
@@ -156,6 +182,7 @@ void renderFont(SDL_Renderer* r, SDL_Surface* pText, int x, int y)
       if(SDL_RenderCopy(r, tex, NULL, &dstRect)) {
 	SHOW_TTF_FAIL(TTF_RenderUTF8_Solid);
       }
+	  SDL_DestroyTexture(tex);
     }
     else {
       SHOW_TTF_FAIL(SDL_CreateTextureFromSurface);

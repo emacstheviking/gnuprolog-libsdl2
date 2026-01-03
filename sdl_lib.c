@@ -8,6 +8,7 @@
 #include <SDL.h>
 
 #include "sdllib_common.h"
+#undef __DEBUG__
 
 
 // These are created during SDL_Init to avoid repetition
@@ -407,6 +408,61 @@ PlBool gp_SDL_DestroyTexture(PlLong texture)
 }
 
 
+#define __max_output_list 256
+
+PlBool gp_SDL_GatherAllEvents(PlTerm output)
+{
+	SDL_Event ev;
+	PlTerm tlist[__max_output_list];
+	int n = 0;
+	char szTerm[256]; //gets filled in by macro
+	PlTerm term;
+	
+	while(0 != SDL_PollEvent(&ev)){
+		term = 0;
+		switch(ev.type){
+
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:    EVB(evMouseButton);
+			case SDL_MOUSEMOTION:      EVB(evMouseMotion);
+			case SDL_MOUSEWHEEL:       EVB(evMouseWheel);
+			case SDL_WINDOWEVENT:      EVB(evWindow);
+
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:	           EVB(evKbd);
+
+			case SDL_TEXTEDITING:      EVB_TERM(evTextEditing);
+			case SDL_TEXTINPUT:        EVB_TERM(evTextInput);
+
+			case SDL_DOLLARGESTURE:
+			case SDL_DOLLARRECORD:     EVB_TERM(evDollarEvent);
+
+			case SDL_QUIT:             EVB(evQuit);
+			case SDL_DROPFILE:         EVB_TERM(evDropEvent);
+
+			case SDL_USEREVENT:        EVB_TERM(evUserEvent);
+
+
+			default:
+				szTerm[0] = (char)0;
+
+		}
+		if(szTerm[0] != (char)0){
+			if(n < __max_output_list){
+				if(term == 0){
+					tlist[n++] = Pl_Read_From_String(szTerm);
+				}else{
+					tlist[n++] = term;
+				}
+			}else{
+				fprintf(stderr, "Too many list elements in result\n", "");
+			}
+		}
+	}
+	
+	return Pl_Un_Proper_List_Check(n, tlist, output);
+}
+
 PlBool gp_SDL_PollEvent(PlTerm *event)
 {
   SDL_Event ev;
@@ -440,7 +496,8 @@ PlBool gp_SDL_PollEvent(PlTerm *event)
 	case SDL_USEREVENT:        EVB_TERM(evUserEvent);
 
 	default:
-	  sprintf(szTerm, "unhandled(%u)", ev.type);
+	  //sprintf(szTerm, "unhandled(%u)", ev.type);
+	  szTerm[0] = (char)0;
     }
 
     // Only copy the term if the term string was written to
@@ -1066,6 +1123,29 @@ PlBool gp_SDL_RenderCopyEx(
   return PL_TRUE;
 }
 
+PlBool gp_SDL_FlushEvents(PlLong mintype, PlLong maxtype)
+{
+	SDL_FlushEvents((uint32_t) mintype, (uint32_t) maxtype);
+	return PL_TRUE;
+}
+
+PlBool gp_SDL_FlushEvent(PlLong type)
+{
+	SDL_FlushEvent((uint32_t) type);
+	return PL_TRUE;
+}
+
+PlBool gp_SDL_PumpEvents(void)
+{
+	SDL_PumpEvents();
+	return PL_TRUE;
+}
+
+PlBool gp_SDL_EventState(PlLong type, PlLong state)
+{
+	SDL_EventState((uint32_t) type, (int) state);
+	return PL_TRUE;
+}
 
 PlBool gp_SDL_QueryTexture(
     SDL_Texture *texture,

@@ -1,12 +1,11 @@
+
 # GNU Prolog / SDL2
 
-Love Prolog, love graphics? Well this is for you!
-
-I am really starting to enjoy Prolog a lot, especially GNU Prolog as
-it is a fast, clean and very very easy to get to grips with
-system. And quite stable too. It has one of the best FFI systems I've
-ever seen and not only that, it can produce standalone native
-executables with "gplc" as well. How much more could you want?
+This is a continuation fork of the original package. The tests
+under the `f.pl` are failing because I haven't updated it with the
+changes to the SDL2 functions. But it works, trust me. I will
+update the tests eventually to allow you to check if all is compiled
+correctly but for the time being, treat this as an `unstable` branch.
 
 # LICENCE
 
@@ -15,8 +14,47 @@ Also, I ask that you tell me what you use the code for and please
 don't write software that hurts people with it. That's bad karma
 that nobody needs. Other than that, it's yours I guess.
 
+# Linux installation
+
+This is the default. Once you have all the necessary SDL2 libraries 
+and development packages for your linux distribution, it should compile.
+The packages are
+
+	SDL2
+	SDL2 TTF
+	SDL2 Image
+	SDL2 Mixer
+
+Depending on your distro, these will be called differently, on
+ubuntu, these are:
+
+    libsdl2-2.0-0
+	libsdl2-image-2.0-0
+	libsdl2-mixer-2.0-0
+	libsdl2-ttf-2.0-0
+    libsdl2-dev
+    libsdl2-ttf-dev
+    libsdl2-mixer-dev
+    libsdl2-image-dev
+
+
+After that, just type:
+	make 
+
+This will produce a binary called `sdltest` and copy it
+to `~/.local/bin/gprolog-sdl2`
+
+Which you should just be able to run with
+	gprolog-sdl2
+	
+And get a top-level with SDL2 functions as `builtins` giving you
+an interactive development environment. You can also do `gprolog-sdl2 --consult-file mycode.pl`
+to test your module.
 
 # OS X  Installation
+
+_(Due to the changes and the fact that I do not have a Mac machine to test
+this on, you will have to make sure it works yourself.)_
 
 I initially used "mac ports' version os the packages, that had
 issues. Then I downloaded the source code from SDL site, that had
@@ -68,27 +106,8 @@ accessed from the "Setup" button on the right hand side of the
   - Timeout (msec) is 500
   - Interface is (default)
   - Audio is Duplex
-
-
-# Ubuntu 14.04 Installation
-
-I did this to make sure I had everything and the kitchen sink:
-
-    sudo apt-get install libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-mixer-2.0-0 libsdl2-ttf-2.0-0
-    sudo apt-get install libsdl2-dev
-    sudo apt-get install libsdl2-ttf-dev
-    sudo apt-get install libsdl2-mixer-dev
-    sudo apt-get install libsdl2-image-dev
-
-After that all you do is run the target:
-
-    make sdl_ubuntu
-
-Which, if the libraries are as indicated in the Makefile, should have
-produced a binary called sdltest in the current folder.
-
-
+ 
 # And so...
 
-I continue to work on it, if you want to help, great.
+I continue the work started by [emacstheviking](https://github.com/emacstheviking/gnuprolog-libsdl2).
 

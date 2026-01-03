@@ -1,3 +1,4 @@
+%% : vim : set ft=prolog
 %%====================================================================
 %%
 %%                            FFI DEFINITIONS
@@ -57,7 +58,7 @@
 :- foreign(sdl_DestroyTexture(+positive), [fct_name(gp_SDL_DestroyTexture)]).
 :- foreign(sdl_FreeSurface(+positive), [fct_name(gp_SDL_FreeSurface)]).
 :- foreign(sdl_RenderCopyDefaults(+positive, +positive), [fct_name(gp_SDL_RenderCopyDefaults)]).
-:- foreign(sdl_RenderCopy(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderCopyDefaults)]).
+:- foreign(sdl_RenderCopy(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderCopy)]).
 :- foreign(sdl_RenderCopyEx_C(+positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +positive, +integer, +integer, +integer, +positive), [fct_name(gp_SDL_RenderCopyEx)]).
 :- foreign(sdl_QueryTexture(+positive, -positive, -positive, -positive, -positive), [fct_name(gp_SDL_QueryTexture)]).
 :- foreign(sdl_GetTextureAlphaMod(+positive, -positive), [fct_name(gp_SDL_GetTextureAlphaMod)]).
@@ -71,6 +72,12 @@
 %% Event functions
 
 :- foreign(sdl_PollEvent(-term), [fct_name(gp_SDL_PollEvent)]).
+:- foreign(sdl_FlushEvents_C(+positive, +positive), [fct_name(gp_SDL_FlushEvents)]).
+:- foreign(sdl_FlushEvent_C(+positive), [fct_name(gp_SDL_FlushEvent)]).
+:- foreign(sdl_PumpEvents, [fct_name(gp_SDL_PumpEvents)]).
+:- foreign(sdl_EventState(+positive, +positive), [fct_name(gp_SDL_EventState)]).
+:- foreign(sdl_GatherAllEvents(term), [fct_name(gp_SDL_GatherAllEvents)]).
+
 
 %% TODO: Going to need then when I do TIMER support...
 %%
@@ -155,14 +162,20 @@
 
 %% Only going to support UTF-8 encoded text...
 
-:- foreign(ttf_RenderUTF8_Solid(+positive, +positive, +positive, +positive, +codes),
+:- foreign(ttf_RenderUTF8_Solid_White(+positive, +positive, +positive, +positive, +codes),
+	   [fct_name(gp_TTF_RenderUTF8_Solid_White)]).
+
+:- foreign(ttf_RenderUTF8_Solid(+positive, +positive, +positive, +positive, +codes, +positive, +positive, +positive, +positive),
 	   [fct_name(gp_TTF_RenderUTF8_Solid)]).
 
-:- foreign(ttf_RenderUTF8_Shaded(+positive, +positive, +positive, +positive, +codes),
-	   [fct_name(gp_TTF_RenderUTF8_Shaded)]).
+:- foreign(ttf_RenderUTF8_Solid_Wrapped(+positive, +positive, +positive, +positive, +codes, +positive, +positive, +positive, +positive, +positive),
+	   [fct_name(gp_TTF_RenderUTF8_Solid_Wrapped)]).
 
-:- foreign(ttf_RenderUTF8_Blended(+positive, +positive, +positive, +positive, +codes),
-	   [fct_name(gp_TTF_RenderUTF8_Blended)]).
+:- foreign(ttf_RenderUTF8_Shaded_White(+positive, +positive, +positive, +positive, +codes),
+	   [fct_name(gp_TTF_RenderUTF8_Shaded_White)]).
+
+:- foreign(ttf_RenderUTF8_Blended_White(+positive, +positive, +positive, +positive, +codes),
+	   [fct_name(gp_TTF_RenderUTF8_Blended_White)]).
 
 :- foreign(ttf_SizeUTF8(+positive, +codes, -positive, -positive),
 	   [fct_name(gp_TTF_SizeUTF8)]).

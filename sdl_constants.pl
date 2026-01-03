@@ -1,3 +1,4 @@
+%% : vim : set ft=prolog
 %%--------------------------------------------------------------------
 %%
 %% Bit-based flag lookup tables.
@@ -116,3 +117,31 @@ sdl_constants('Log_Priority',
 	      , error       - 5
 	      , critical    - 6
 	      ]).
+
+sdl_constants('SDL_EventType',
+		[ firstevent 			- 0x0
+		, quit 					- 0x100
+		, app_terminating 		- 0x101
+		, app_lowmemory 		- 0x102
+		, app_willenterbackground - 0x103
+		, app_didenterbackground - 0x104
+		, app_willenterforeground - 0x105
+		, app_didenterforeground - 0x106
+		, localechanged 		- 0x107
+		, displayevent 			- 0x150
+		, windowevent 			- 0x200
+		, syswmevent 			- 0x201
+		, keydown 				- 0x300
+		, keyup 				- 0x301
+		, textediting 			- 0x302
+		, textinput 			- 0x303
+		, keymapchanged 		- 0x304
+		, textediting_ext		- 0x305
+		, mousemotion 			- 0x400
+		, mousebuttondown 		- 0x401
+		, mousebuttonup 		- 0x402
+		, mousewheel 			- 0x403
+
+		, userevent 			- 0x8000
+		, lastevent 			- 0xffff
+		]).
