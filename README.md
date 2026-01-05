@@ -1,3 +1,11 @@
+# UPDATE -- JAN 2026 ++
+
+This repo is no longer maintained by me but THERE IS an ACTIVE FORK currently alive
+and well, managed by `g0zar`, the link to it is here:
+
+      https://github.com/g0zar/gnuprolog-libsdl2/tree/master
+
+
 # GNU Prolog / SDL2
 
 Love Prolog, love graphics? Well this is for you!
