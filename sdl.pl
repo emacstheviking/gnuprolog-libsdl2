@@ -90,15 +90,16 @@ sdl_CreateWindow(Title, X, Y, Width, Height, Flags, Wnd) :-
 	sdl_CreateWindow_C(Title, XPos, YPos, Width, Height, Value, Wnd).
 
 
-
-
 sdl_SetWindowFullScreen(Wnd, Flag) :-
 	nonvar(Wnd),
-	sdl_make_flags('SDL_SetWindowFullScreen', [Flag], Value),
+	%BUG? could this be switched up by accident?
+	sdl_make_flags([Flag], 'SDL_SetWindowFullScreen', Value),
 	sdl_SetWindowFullScreen_C(Wnd, Value).
 
-
-
+sdl_SetRenderDrawBlendMode(Renderer, Flag):-
+	nonvar(Renderer),
+	sdl_make_flags([Flag], 'SDL_BlendMode', Value),
+	sdl_SetRenderDrawBlendMode_C(Renderer, Value).
 
 sdl_CreateRenderer(Wnd, Index, Flags, Renderer) :-
 	var(Renderer),

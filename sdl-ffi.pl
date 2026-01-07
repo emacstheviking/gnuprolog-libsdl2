@@ -44,6 +44,7 @@
 :- foreign(sdl_RenderGetViewport(+positive, -positive, -positive, -positive, -positive), [fct_name(gp_SDL_RenderGetViewport)]).
 :- foreign(sdl_RenderGetClipRect(+positive, -positive, -positive, -positive, -positive), [fct_name(gp_SDL_RenderGetClipRect)]).
 :- foreign(sdl_RenderSetClipRect(+positive, +positive, +positive, +positive, +positive), [fct_name(gp_SDL_RenderSetClipRect)]).
+:- foreign(sdl_SetRenderDrawBlendMode_C(+positive, +positive), [fct_name(gp_SDL_SetRenderDrawBlendMode)]).
 
 
 %% ADDITIONS to "SDL" for your convenience!

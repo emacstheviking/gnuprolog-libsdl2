@@ -48,9 +48,9 @@ sdl_constants('SDL_CreateTexture',
 	      ]).
 
 sdl_constants('SDL_SetWindowFullScreen',
-	      [ fullscreen         - 0x00000001,
-		fullscreen_desktop - 0x000010001
-	      ]).
+	    [ fullscreen         - 0x000000001
+		, fullscreen_desktop - 0x000010001
+	    ]).
 
 sdl_constants('SDL_GetWindowFlags',
 	      [ fullscreen         - 0x00000001
@@ -144,4 +144,13 @@ sdl_constants('SDL_EventType',
 
 		, userevent 			- 0x8000
 		, lastevent 			- 0xffff
+		]).
+
+sdl_constants('SDL_BlendMode',
+		[ none			- 0x00
+		, blend 		- 0x01
+		, add			- 0x02
+		, [mod] 		- 0x04
+		, mul			- 0x08
+		, invalid 		- 0x7FFFFFFF
 		]).

@@ -972,6 +972,11 @@ PlBool gp_SDL_RenderDrawCircle(PlLong renderer, PlLong x0, PlLong y0, PlLong rad
   return PL_TRUE;
 }
 
+PlBool gp_SDL_SetRenderDrawBlendMode(PlLong renderer, PlLong mode)
+{
+	SDL_SetRenderDrawBlendMode((SDL_Renderer*)renderer, mode);
+	return PL_TRUE;
+}
 
 /**
  * Pseudo-SDL: SDL_RenderFillCircle
@@ -1207,6 +1212,8 @@ PlBool gp_SDL_GetTextureBlendMode(PlLong texture, PlTerm *mode)
 
 PlBool gp_SDL_SetTextureBlendMode(PlLong texture, char* mode)
 {
+	//NOTE: strcpy used as comparission function?
+	//probably will have to change this to strcmp
   SDL_BlendMode bmode  = SDL_BLENDMODE_NONE;
   if (!strcpy("blend", mode)) {
     bmode = SDL_BLENDMODE_BLEND;
